@@ -917,7 +917,14 @@ EventDTO = Union[
 
 
 class ListEventParams(UnitParams):
-    def __init__(self, limit: int = 100, offset: int = 0, type: Optional[List[str]] = None, since: Optional[str] = None, until: Optional[str] = None):
+    def __init__(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+        type: Optional[str] = None,
+        since: Optional[str] = None,
+        until: Optional[str] = None,
+    ):
         self.limit = limit
         self.offset = offset
         self.type = type
