@@ -27,21 +27,6 @@ class GetAccruedInterestTotalParams(UnitParams):
         self.until_interest_month = until_interest_month
 
     def to_dict(self) -> Dict:
-        has_since_until = bool(self.since) and bool(self.until)
-        has_interest_months = bool(self.since_interest_month) and bool(self.until_interest_month)
-
-        if not has_since_until and not has_interest_months:
-            raise ValueError(
-                "Either both 'since' and 'until' or both 'since_interest_month' "
-                "and 'until_interest_month' must be provided."
-            )
-
-        if has_since_until and has_interest_months:
-            raise ValueError(
-                "Cannot specify both 'since'/'until' and "
-                "'since_interest_month'/'until_interest_month'."
-            )
-
         parameters = {}
         if self.account_id:
             parameters["filter[accountId]"] = self.account_id
