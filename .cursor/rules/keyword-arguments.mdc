@@ -1,0 +1,29 @@
+---
+description: Always use keyword arguments when calling constructors and factory methods
+globs: unit/**/*.py
+alwaysApply: false
+---
+
+# Keyword Arguments Required
+
+Always use keyword arguments when calling constructors (`__init__`) and factory methods (e.g. `from_json_api`) in this SDK. Positional arguments make it easy to silently pass the wrong value when parameter lists are long.
+
+```python
+# BAD — positional arguments
+return IndividualApplicationDTO(
+    _id,
+    date_utils.to_datetime(attributes["createdAt"]),
+    FullName.from_json_api(attributes["fullName"]),
+    attributes["status"],
+)
+
+# GOOD — keyword arguments
+return IndividualApplicationDTO(
+    id=_id,
+    created_at=date_utils.to_datetime(attributes["createdAt"]),
+    full_name=FullName.from_json_api(attributes["fullName"]),
+    status=attributes["status"],
+)
+```
+
+This applies to all DTO classes, request classes, and any other class instantiation in the SDK.

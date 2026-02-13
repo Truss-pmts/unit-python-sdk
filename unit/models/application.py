@@ -302,6 +302,14 @@ class IndividualApplicationDTO(object):
         business_vertical: Optional[BusinessVertical],
         tags: Optional[Dict[str, str]],
         relationships: Optional[Dict[str, Relationship]],
+        # V2 response fields
+        account_purpose: Optional[str] = None,
+        source_of_funds: Optional[str] = None,
+        transaction_volume: Optional[str] = None,
+        business_industry: Optional[str] = None,
+        is_incorporated: Optional[bool] = None,
+        website: Optional[str] = None,
+        countries_of_operation: Optional[List[str]] = None,
     ):
         self.id = id
         self.type = "individualApplication"
@@ -321,29 +329,44 @@ class IndividualApplicationDTO(object):
             "soleProprietorship": sole_proprietorship,
             "businessVertical": business_vertical,
             "tags": tags,
+            # V2 fields
+            "accountPurpose": account_purpose,
+            "sourceOfFunds": source_of_funds,
+            "transactionVolume": transaction_volume,
+            "businessIndustry": business_industry,
+            "isIncorporated": is_incorporated,
+            "website": website,
+            "countriesOfOperation": countries_of_operation,
         }
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         return IndividualApplicationDTO(
-            _id,
-            date_utils.to_datetime(attributes["createdAt"]),
-            FullName.from_json_api(attributes["fullName"]),
-            Address.from_json_api(attributes["address"]),
-            date_utils.to_date(attributes["dateOfBirth"]),
-            attributes["email"],
-            Phone.from_json_api(attributes["phone"]),
-            attributes["status"],
-            attributes.get("ssn"),
-            attributes.get("message"),
-            attributes.get("ip"),
-            attributes.get("ein"),
-            attributes.get("dba"),
-            attributes.get("soleProprietorship"),
-            attributes.get("businessVertical"),
-            attributes.get("tags"),
-            relationships,
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            full_name=FullName.from_json_api(attributes["fullName"]),
+            address=Address.from_json_api(attributes["address"]),
+            date_of_birth=date_utils.to_date(attributes["dateOfBirth"]),
+            email=attributes["email"],
+            phone=Phone.from_json_api(attributes["phone"]),
+            status=attributes["status"],
+            ssn=attributes.get("ssn"),
+            message=attributes.get("message"),
+            ip=attributes.get("ip"),
+            ein=attributes.get("ein"),
+            dba=attributes.get("dba"),
+            sole_proprietorship=attributes.get("soleProprietorship"),
+            business_vertical=attributes.get("businessVertical"),
+            tags=attributes.get("tags"),
+            relationships=relationships,
+            account_purpose=attributes.get("accountPurpose"),
+            source_of_funds=attributes.get("sourceOfFunds"),
+            transaction_volume=attributes.get("transactionVolume"),
+            business_industry=attributes.get("businessIndustry"),
+            is_incorporated=attributes.get("isIncorporated"),
+            website=attributes.get("website"),
+            countries_of_operation=attributes.get("countriesOfOperation"),
         )
 
 
@@ -376,6 +399,13 @@ class BusinessApplicationDTO(object):
         operating_address: Optional[Address],
         tags: Optional[Dict[str, str]],
         relationships: Optional[Dict[str, Relationship]],
+        # V2 response fields
+        account_purpose: Optional[str] = None,
+        source_of_funds: Optional[str] = None,
+        transaction_volume: Optional[str] = None,
+        business_industry: Optional[str] = None,
+        business_description: Optional[str] = None,
+        is_regulated: Optional[bool] = None,
     ):
         self.id = id
         self.type = "businessApplication"
@@ -404,38 +434,56 @@ class BusinessApplicationDTO(object):
             "beneficialOwners": beneficial_owners,
             "operatingAddress": operating_address,
             "tags": tags,
+            # V2 fields
+            "accountPurpose": account_purpose,
+            "sourceOfFunds": source_of_funds,
+            "transactionVolume": transaction_volume,
+            "businessIndustry": business_industry,
+            "businessDescription": business_description,
+            "isRegulated": is_regulated,
         }
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
+        operating_address = (
+            Address.from_json_api(attributes["operatingAddress"])
+            if attributes.get("operatingAddress")
+            else None
+        )
         return BusinessApplicationDTO(
-            _id,
-            date_utils.to_datetime(attributes["createdAt"]),
-            attributes.get("name"),
-            Address.from_json_api(attributes["address"]),
-            Phone.from_json_api(attributes["phone"]),
-            attributes["status"],
-            attributes.get("stateOfIncorporation"),
-            attributes.get("entityType"),
-            BusinessContact.from_json_api(attributes["contact"]),
-            Officer.from_json_api(attributes["officer"]),
-            BeneficialOwner.from_json_api(attributes["beneficialOwners"]),
-            attributes.get("ssn"),
-            attributes.get("message"),
-            attributes.get("ip"),
-            attributes.get("ein"),
-            attributes.get("dba"),
-            attributes.get("website"),
-            attributes.get("year_of_incorporation"),
-            attributes.get("business_vertical"),
-            attributes.get("annual_revenue"),
-            attributes.get("number_of_employees"),
-            attributes.get("cash_flow"),
-            attributes.get("countries_of_operation"),
-            attributes.get("operating_address"),
-            attributes.get("tags"),
-            relationships,
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            name=attributes.get("name"),
+            address=Address.from_json_api(attributes["address"]),
+            phone=Phone.from_json_api(attributes["phone"]),
+            status=attributes["status"],
+            state_of_incorporation=attributes.get("stateOfIncorporation"),
+            entity_type=attributes.get("entityType"),
+            contact=BusinessContact.from_json_api(attributes["contact"]),
+            officer=Officer.from_json_api(attributes["officer"]),
+            beneficial_owners=BeneficialOwner.from_json_api(attributes["beneficialOwners"]),
+            ssn=attributes.get("ssn"),
+            message=attributes.get("message"),
+            ip=attributes.get("ip"),
+            ein=attributes.get("ein"),
+            dba=attributes.get("dba"),
+            website=attributes.get("website"),
+            year_of_incorporation=attributes.get("yearOfIncorporation"),
+            business_vertical=attributes.get("businessVertical"),
+            annual_revenue=attributes.get("annualRevenue"),
+            number_of_employees=attributes.get("numberOfEmployees"),
+            cash_flow=attributes.get("cashFlow"),
+            countries_of_operation=attributes.get("countriesOfOperation"),
+            operating_address=operating_address,
+            tags=attributes.get("tags"),
+            relationships=relationships,
+            account_purpose=attributes.get("accountPurpose"),
+            source_of_funds=attributes.get("sourceOfFunds"),
+            transaction_volume=attributes.get("transactionVolume"),
+            business_industry=attributes.get("businessIndustry"),
+            business_description=attributes.get("businessDescription"),
+            is_regulated=attributes.get("isRegulated"),
         )
 
 

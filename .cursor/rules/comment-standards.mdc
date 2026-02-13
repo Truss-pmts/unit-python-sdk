@@ -1,0 +1,25 @@
+---
+description: Standards for code comments in the SDK
+alwaysApply: true
+---
+
+# Comment Standards
+
+Never label comments with process artifacts like "BUG FIX", "HACK", "WORKAROUND", "HOTFIX", or similar. Comments should explain *why* the code is the way it is, not narrate the history of how it got there. The git history already tracks that.
+
+```python
+# BAD
+# BUG FIX: was using snake_case keys, JSON API uses camelCase
+attributes.get("yearOfIncorporation")
+
+# BAD
+# WORKAROUND: the API returns null sometimes
+value = attributes.get("field") or default
+
+# GOOD (no comment needed if the code is self-explanatory)
+attributes.get("yearOfIncorporation")
+
+# GOOD (explains a non-obvious decision)
+# Unit's JSON API returns null for this field on v1 responses
+value = attributes.get("field") or default
+```
