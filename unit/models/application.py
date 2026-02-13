@@ -121,6 +121,165 @@ SourceOfFunds = Literal[
     "Inheritance", "Salary", "Savings", "InvestmentReturns", "Gifts"
 ]
 
+# --- V2 Enum Types ---
+# These types are used for v2 application create requests.
+# Business and Sole Prop share AccountPurpose and SourceOfFunds enums.
+# TransactionVolume has separate enum sets per application type.
+# Individual-only enums (individual sourceOfFunds, accountPurpose,
+# transactionVolume, profession) are out of scope — Truss only supports
+# sole prop and business.
+
+AccountPurposeBusinessSoleProp = Literal[
+    "RetailSalesInPerson",
+    "EcommerceSales",
+    "CashHeavyIncomeAndOperations",
+    "ImportExportTradeOperations",
+    "ProfessionalServicesNotHandlingFunds",
+    "ProfessionalServicesHandlingFunds",
+    "HoldingOrInvestmentCompanyOperations",
+    "PropertyManagementOrRealEstateOperations",
+    "CharitableOrNonProfitOrganizationOperations",
+    "ConstructionAndContractingOperations",
+    "CommercialCashOperations",
+    "FreightForwardingOrLogisticsOperations",
+    "ThirdPartyPaymentProcessing",
+    "TechnologyStartupOperations",
+    "WholesaleDistributionOperations",
+    "FranchiseOperationOperations",
+    "HealthcareProviderOperations",
+    "EducationalInstitutionOperations",
+]
+
+SourceOfFundsBusinessSoleProp = Literal[
+    "SalesOfGoods",
+    "SalesOfServices",
+    "CustomerPayments",
+    "InvestmentCapital",
+    "BusinessLoans",
+    "OwnerContributions",
+    "FranchiseRevenue",
+    "RentalIncome",
+    "GovernmentContractsOrGrants",
+    "DonationsOrFundraising",
+    "MembershipFeesOrSubscriptions",
+    "LicensingOrRoyalties",
+    "CommissionIncome",
+    "ImportExportRevenue",
+    "CryptocurrencyRelatedActivity",
+]
+
+TransactionVolumeBusiness = Literal[
+    "LessThan10K",
+    "Between10KAnd50K",
+    "Between50KAnd250K",
+    "Between250KAnd1M",
+    "Between1MAnd2M",
+    "GreaterThan2M",
+]
+
+TransactionVolumeSoleProp = Literal[
+    "LessThan5K",
+    "Between5KAnd20K",
+    "Between20KAnd75K",
+    "Between75KAnd150K",
+    "Between150KAnd300K",
+    "GreaterThan300K",
+]
+
+BusinessIndustry = Literal[
+    # Retail
+    "GroceryStoresOrSupermarkets",
+    "ConvenienceStores",
+    "SpecialtyFoodRetailers",
+    "GasStationsWithRetail",
+    "GeneralMerchandiseOrDepartmentStores",
+    "OnlineRetailOrECommerce",
+    "SubscriptionAndMembershipPlatforms",
+    "DirectToConsumerBrands",
+    "Cannabis",
+    # Financial Services
+    "BanksOrCreditUnions",
+    "FinTechOrPaymentProcessing",
+    "InsuranceProviders",
+    "InvestmentAdvisorsOrBrokerDealers",
+    "LendingOrMortgageCompanies",
+    "TreasuryManagementPlatforms",
+    "PersonalFinanceAppsOrAIAssistants",
+    "RetirementPlanning",
+    "RealEstateInvestmentPlatforms",
+    "MoneyServiceBusinesses",
+    "Cryptocurrency",
+    "DebtCollection",
+    "PaydayLending",
+    "Gambling",
+    # Food & Agriculture
+    "FarmsOrAgriculturalProducers",
+    "FoodWholesalersOrDistributors",
+    "RestaurantsOrCafes",
+    "BarsOrNightclubs",
+    "CateringServices",
+    "FarmersMarkets",
+    "RestaurantTechAndPOSProviders",
+    # Healthcare
+    "HospitalsOrClinics",
+    "Pharmacies",
+    "MedicalEquipmentSuppliers",
+    "BiotechnologyFirms",
+    "HomeHealthServices",
+    "HealthcareStaffingPlatforms",
+    "WellnessAndBenefitsPlatforms",
+    "HealthcareAndSocialAssistance",
+    # Professional Services
+    "LegalServices",
+    "AccountingOrAuditingFirms",
+    "ConsultingFirms",
+    "MarketingOrAdvertisingAgencies",
+    "RealEstateAgentsOrPropertyManagers",
+    "CorporateServicesAndIncorporation",
+    "HRAndWorkforceManagementPlatforms",
+    "DirectMarketingOrTelemarketing",
+    "LegalAccountingConsultingOrComputerProgramming",
+    # Manufacturing
+    "ChemicalManufacturing",
+    "ElectronicsOrHardwareManufacturing",
+    "AutomotiveManufacturing",
+    "ConstructionMaterials",
+    "TextilesOrApparel",
+    "Mining",
+    # Real Estate & Construction
+    "RealEstate",
+    "Construction",
+    # Other
+    "TransportationOrWarehousing",
+    "WholesaleTrade",
+    "BusinessSupportOrBuildingServices",
+    "EscortServices",
+    "DatingOrAdultEntertainment",
+]
+
+EntityTypeV2 = Literal[
+    "Estate",
+    "Trust",
+    "ForeignFinancialInstitution",
+    "DomesticFinancialInstitution",
+    "GovernmentEntityOrAgency",
+    "ReligiousOrganization",
+    "Charity",
+    "LLC",
+    "Partnership",
+    "PubliclyTradedCorporation",
+    "PrivatelyHeldCorporation",
+    "NotForProfitOrganization",
+]
+
+UsNexus = Literal[
+    "NotAvailable",
+    "Employees",
+    "Customers",
+    "PhysicalOfficeOrFacility",
+    "BankingRelationships",
+]
+
 
 class IndividualApplicationDTO(object):
     def __init__(
