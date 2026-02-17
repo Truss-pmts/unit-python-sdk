@@ -8,7 +8,7 @@ class ApplicationResource(BaseResource):
         super().__init__(api_url, token)
         self.resource = "applications"
 
-    def create(self, request: Union[CreateIndividualApplicationRequest, CreateBusinessApplicationRequest]) -> Union[UnitResponse[ApplicationDTO], UnitError]:
+    def create(self, request: Union[CreateIndividualApplicationRequest, CreateBusinessApplicationRequest, CreateSolePropApplicationRequestV2, CreateBusinessApplicationRequestV2]) -> Union[UnitResponse[ApplicationDTO], UnitError]:
         payload = request.to_json_api()
         response = super().post(self.resource, payload)
 

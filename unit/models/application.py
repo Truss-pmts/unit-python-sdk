@@ -1,3 +1,4 @@
+import warnings
 from unit.utils import date_utils
 from unit.models import *
 from typing import IO
@@ -442,6 +443,13 @@ ApplicationDTO = Union[IndividualApplicationDTO, BusinessApplicationDTO]
 
 
 class CreateIndividualApplicationRequest(UnitRequest):
+    """Deprecated: Use CreateSolePropApplicationRequestV2 instead.
+
+    The Unit API v1 application endpoints are being retired in favor of v2.
+    This class is kept for backward compatibility but will be removed in a
+    future release.
+    """
+
     def __init__(
         self,
         full_name: FullName,
@@ -464,6 +472,12 @@ class CreateIndividualApplicationRequest(UnitRequest):
         number_of_employees: Optional[NumberOfEmployees] = None,
         business_vertical: Optional[BusinessVertical] = None,
     ):
+        warnings.warn(
+            "CreateIndividualApplicationRequest is deprecated. "
+            "Use CreateSolePropApplicationRequestV2 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.full_name = full_name
         self.date_of_birth = date_of_birth
         self.address = address
@@ -551,6 +565,13 @@ class CreateIndividualApplicationRequest(UnitRequest):
 
 
 class CreateBusinessApplicationRequest(UnitRequest):
+    """Deprecated: Use CreateBusinessApplicationRequestV2 instead.
+
+    The Unit API v1 application endpoints are being retired in favor of v2.
+    This class is kept for backward compatibility but will be removed in a
+    future release.
+    """
+
     def __init__(
         self,
         name: str,
@@ -578,6 +599,12 @@ class CreateBusinessApplicationRequest(UnitRequest):
         operating_address: Optional[Address] = None,
         idempotency_key: Optional[str] = None,
     ):
+        warnings.warn(
+            "CreateBusinessApplicationRequest is deprecated. "
+            "Use CreateBusinessApplicationRequestV2 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.name = name
         self.address = address
         self.phone = phone
