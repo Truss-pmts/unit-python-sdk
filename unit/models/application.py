@@ -1,3 +1,4 @@
+import warnings
 from unit.utils import date_utils
 from unit.models import *
 from typing import IO
@@ -442,6 +443,13 @@ ApplicationDTO = Union[IndividualApplicationDTO, BusinessApplicationDTO]
 
 
 class CreateIndividualApplicationRequest(UnitRequest):
+    """Deprecated: Use CreateSolePropApplicationRequestV2 instead.
+
+    The Unit API v1 application endpoints are being retired in favor of v2.
+    This class is kept for backward compatibility but will be removed in a
+    future release.
+    """
+
     def __init__(
         self,
         full_name: FullName,
@@ -464,6 +472,12 @@ class CreateIndividualApplicationRequest(UnitRequest):
         number_of_employees: Optional[NumberOfEmployees] = None,
         business_vertical: Optional[BusinessVertical] = None,
     ):
+        warnings.warn(
+            "CreateIndividualApplicationRequest is deprecated. "
+            "Use CreateSolePropApplicationRequestV2 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.full_name = full_name
         self.date_of_birth = date_of_birth
         self.address = address
@@ -551,6 +565,13 @@ class CreateIndividualApplicationRequest(UnitRequest):
 
 
 class CreateBusinessApplicationRequest(UnitRequest):
+    """Deprecated: Use CreateBusinessApplicationRequestV2 instead.
+
+    The Unit API v1 application endpoints are being retired in favor of v2.
+    This class is kept for backward compatibility but will be removed in a
+    future release.
+    """
+
     def __init__(
         self,
         name: str,
@@ -578,6 +599,12 @@ class CreateBusinessApplicationRequest(UnitRequest):
         operating_address: Optional[Address] = None,
         idempotency_key: Optional[str] = None,
     ):
+        warnings.warn(
+            "CreateBusinessApplicationRequest is deprecated. "
+            "Use CreateBusinessApplicationRequestV2 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.name = name
         self.address = address
         self.phone = phone
@@ -663,6 +690,287 @@ class CreateBusinessApplicationRequest(UnitRequest):
 
     def __repr__(self):
         json.dumps(self.to_json_api())
+
+
+class CreateSolePropApplicationRequestV2(UnitRequest):
+    """V2 sole proprietor application request.
+
+    Uses individualApplication type with soleProprietorship=True.
+    Truss only supports sole prop (not plain individual), so this class
+    does not include the 'profession' field (individual-only in v2).
+    """
+
+    def __init__(
+        self,
+        full_name: FullName,
+        date_of_birth: date,
+        address: Address,
+        email: str,
+        phone: Phone,
+        account_purpose: AccountPurposeBusinessSoleProp,
+        source_of_funds: SourceOfFundsBusinessSoleProp,
+        transaction_volume: TransactionVolumeSoleProp,
+        business_industry: BusinessIndustry,
+        is_incorporated: bool,
+        countries_of_operation: List[str],
+        us_nexus: List[UsNexus],
+        website: Optional[str] = None,
+        ssn: Optional[str] = None,
+        passport: Optional[str] = None,
+        nationality: Optional[str] = None,
+        ein: Optional[str] = None,
+        dba: Optional[str] = None,
+        state_of_incorporation: Optional[str] = None,
+        year_of_incorporation: Optional[str] = None,
+        account_purpose_detail: Optional[str] = None,
+        transaction_volume_description: Optional[str] = None,
+        source_of_funds_description: Optional[str] = None,
+        ip: Optional[str] = None,
+        tags: Optional[Dict[str, str]] = None,
+        idempotency_key: Optional[str] = None,
+        device_fingerprints: Optional[List[DeviceFingerprint]] = None,
+    ):
+        self.full_name = full_name
+        self.date_of_birth = date_of_birth
+        self.address = address
+        self.email = email
+        self.phone = phone
+        self.account_purpose = account_purpose
+        self.source_of_funds = source_of_funds
+        self.transaction_volume = transaction_volume
+        self.business_industry = business_industry
+        self.is_incorporated = is_incorporated
+        self.countries_of_operation = countries_of_operation
+        self.us_nexus = us_nexus
+        self.website = website
+        self.ssn = ssn
+        self.passport = passport
+        self.nationality = nationality
+        self.ein = ein
+        self.dba = dba
+        self.state_of_incorporation = state_of_incorporation
+        self.year_of_incorporation = year_of_incorporation
+        self.account_purpose_detail = account_purpose_detail
+        self.transaction_volume_description = transaction_volume_description
+        self.source_of_funds_description = source_of_funds_description
+        self.ip = ip
+        self.tags = tags
+        self.idempotency_key = idempotency_key
+        self.device_fingerprints = device_fingerprints
+
+    def to_json_api(self) -> Dict:
+        payload = {
+            "data": {
+                "type": "individualApplication",
+                "attributes": {
+                    "fullName": self.full_name,
+                    "dateOfBirth": date_utils.to_date_str(self.date_of_birth),
+                    "address": self.address,
+                    "email": self.email,
+                    "phone": self.phone,
+                    "soleProprietorship": True,
+                    # V2 required fields
+                    "accountPurpose": self.account_purpose,
+                    "sourceOfFunds": self.source_of_funds,
+                    "transactionVolume": self.transaction_volume,
+                    "businessIndustry": self.business_industry,
+                    "isIncorporated": self.is_incorporated,
+                    "countriesOfOperation": self.countries_of_operation,
+                    "usNexus": self.us_nexus,
+                    "website": self.website,  # Required in v2, null = "no website"
+                },
+            }
+        }
+
+        attrs = payload["data"]["attributes"]
+
+        if self.ssn:
+            attrs["ssn"] = self.ssn
+
+        if self.passport:
+            attrs["passport"] = self.passport
+
+        if self.nationality:
+            attrs["nationality"] = self.nationality
+
+        if self.ein:
+            attrs["ein"] = self.ein
+
+        if self.dba:
+            attrs["dba"] = self.dba
+
+        if self.ip:
+            attrs["ip"] = self.ip
+
+        if self.tags:
+            attrs["tags"] = self.tags
+
+        if self.idempotency_key:
+            attrs["idempotencyKey"] = self.idempotency_key
+
+        if self.device_fingerprints:
+            attrs["deviceFingerprints"] = [
+                e.to_json_api() for e in self.device_fingerprints
+            ]
+
+        # Conditional v2 fields — only include when not None
+        if self.state_of_incorporation is not None:
+            attrs["stateOfIncorporation"] = self.state_of_incorporation
+
+        if self.year_of_incorporation is not None:
+            attrs["yearOfIncorporation"] = self.year_of_incorporation
+
+        if self.account_purpose_detail is not None:
+            attrs["accountPurposeDetail"] = self.account_purpose_detail
+
+        if self.transaction_volume_description is not None:
+            attrs["transactionVolumeDescription"] = self.transaction_volume_description
+
+        if self.source_of_funds_description is not None:
+            attrs["sourceOfFundsDescription"] = self.source_of_funds_description
+
+        return payload
+
+    def __repr__(self):
+        return json.dumps(self.to_json_api())
+
+
+class CreateBusinessApplicationRequestV2(UnitRequest):
+    """V2 business application request with new required fields."""
+
+    def __init__(
+        self,
+        name: str,
+        address: Address,
+        phone: Phone,
+        state_of_incorporation: str,
+        ein: str,
+        contact: BusinessContact,
+        officer: Officer,
+        beneficial_owners: List[BeneficialOwner],
+        entity_type: EntityTypeV2,
+        year_of_incorporation: str,
+        source_of_funds: SourceOfFundsBusinessSoleProp,
+        business_industry: BusinessIndustry,
+        business_description: str,
+        is_regulated: bool,
+        us_nexus: List[UsNexus],
+        account_purpose: AccountPurposeBusinessSoleProp,
+        transaction_volume: TransactionVolumeBusiness,
+        countries_of_operation: List[str],
+        website: Optional[str] = None,
+        dba: Optional[str] = None,
+        operating_address: Optional[Address] = None,
+        source_of_funds_description: Optional[str] = None,
+        regulator_name: Optional[str] = None,
+        account_purpose_detail: Optional[str] = None,
+        transaction_volume_description: Optional[str] = None,
+        stock_exchange_name: Optional[str] = None,
+        stock_symbol: Optional[str] = None,
+        ip: Optional[str] = None,
+        tags: Optional[Dict[str, str]] = None,
+        idempotency_key: Optional[str] = None,
+    ):
+        self.name = name
+        self.address = address
+        self.phone = phone
+        self.state_of_incorporation = state_of_incorporation
+        self.ein = ein
+        self.contact = contact
+        self.officer = officer
+        self.beneficial_owners = beneficial_owners
+        self.entity_type = entity_type
+        self.year_of_incorporation = year_of_incorporation
+        self.source_of_funds = source_of_funds
+        self.business_industry = business_industry
+        self.business_description = business_description
+        self.is_regulated = is_regulated
+        self.us_nexus = us_nexus
+        self.account_purpose = account_purpose
+        self.transaction_volume = transaction_volume
+        self.countries_of_operation = countries_of_operation
+        self.website = website
+        self.dba = dba
+        self.operating_address = operating_address
+        self.source_of_funds_description = source_of_funds_description
+        self.regulator_name = regulator_name
+        self.account_purpose_detail = account_purpose_detail
+        self.transaction_volume_description = transaction_volume_description
+        self.stock_exchange_name = stock_exchange_name
+        self.stock_symbol = stock_symbol
+        self.ip = ip
+        self.tags = tags
+        self.idempotency_key = idempotency_key
+
+    def to_json_api(self) -> Dict:
+        payload = {
+            "data": {
+                "type": "businessApplication",
+                "attributes": {
+                    "name": self.name,
+                    "address": self.address,
+                    "phone": self.phone,
+                    "stateOfIncorporation": self.state_of_incorporation,
+                    "ein": self.ein,
+                    "contact": self.contact,
+                    "officer": self.officer,
+                    "beneficialOwners": self.beneficial_owners,
+                    "entityType": self.entity_type,
+                    "yearOfIncorporation": self.year_of_incorporation,
+                    # V2 required fields
+                    "sourceOfFunds": self.source_of_funds,
+                    "businessIndustry": self.business_industry,
+                    "businessDescription": self.business_description,
+                    "isRegulated": self.is_regulated,
+                    "usNexus": self.us_nexus,
+                    "accountPurpose": self.account_purpose,
+                    "transactionVolume": self.transaction_volume,
+                    "countriesOfOperation": self.countries_of_operation,
+                    "website": self.website,  # Required in v2, null = "no website"
+                },
+            }
+        }
+
+        attrs = payload["data"]["attributes"]
+
+        if self.dba:
+            attrs["dba"] = self.dba
+
+        if self.ip:
+            attrs["ip"] = self.ip
+
+        if self.tags:
+            attrs["tags"] = self.tags
+
+        if self.idempotency_key:
+            attrs["idempotencyKey"] = self.idempotency_key
+
+        if self.operating_address:
+            attrs["operatingAddress"] = self.operating_address
+
+        # Conditional v2 fields — only include when not None
+        if self.source_of_funds_description is not None:
+            attrs["sourceOfFundsDescription"] = self.source_of_funds_description
+
+        if self.regulator_name is not None:
+            attrs["regulatorName"] = self.regulator_name
+
+        if self.account_purpose_detail is not None:
+            attrs["accountPurposeDetail"] = self.account_purpose_detail
+
+        if self.transaction_volume_description is not None:
+            attrs["transactionVolumeDescription"] = self.transaction_volume_description
+
+        if self.stock_exchange_name is not None:
+            attrs["stockExchangeName"] = self.stock_exchange_name
+
+        if self.stock_symbol is not None:
+            attrs["stockSymbol"] = self.stock_symbol
+
+        return payload
+
+    def __repr__(self):
+        return json.dumps(self.to_json_api())
 
 
 class ApplicationDocumentDTO(object):
