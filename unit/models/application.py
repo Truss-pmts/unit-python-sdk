@@ -777,6 +777,7 @@ class CreateSolePropApplicationRequestV2(UnitRequest):
         tags: Optional[Dict[str, str]] = None,
         idempotency_key: Optional[str] = None,
         device_fingerprints: Optional[List[DeviceFingerprint]] = None,
+        business_description: Optional[str] = None,
     ):
         self.full_name = full_name
         self.date_of_birth = date_of_birth
@@ -805,6 +806,7 @@ class CreateSolePropApplicationRequestV2(UnitRequest):
         self.tags = tags
         self.idempotency_key = idempotency_key
         self.device_fingerprints = device_fingerprints
+        self.business_description = business_description
 
     def to_json_api(self) -> Dict:
         payload = {
@@ -876,6 +878,9 @@ class CreateSolePropApplicationRequestV2(UnitRequest):
 
         if self.source_of_funds_description is not None:
             attrs["sourceOfFundsDescription"] = self.source_of_funds_description
+
+        if self.business_description is not None:
+            attrs["businessDescription"] = self.business_description
 
         return payload
 
