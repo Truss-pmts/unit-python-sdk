@@ -25,6 +25,7 @@ from unit.api.api_token_resource import APITokenResource
 from unit.api.authorization_resource import AuthorizationResource
 from unit.api.authorization_request_resource import AuthorizationRequestResource
 from unit.api.account_end_of_day_resource import AccountEndOfDayResource
+from unit.api.accrued_interest_resource import AccruedInterestResource
 from unit.api.reward_resource import RewardResource
 from unit.api.dispute_resource import DisputeResource
 from unit.api.received_payment_resource import ReceivedPaymentResource
@@ -59,6 +60,7 @@ class Unit(object):
         self.authorizations = AuthorizationResource(api_url, token)
         self.authorization_requests = AuthorizationRequestResource(api_url, token)
         self.account_end_of_day = AccountEndOfDayResource(api_url, token)
+        self.accrued_interest = AccruedInterestResource(api_url, token)
         self.rewards = RewardResource(api_url, token)
         self.batchRelease = BatchReleaseResource(api_url, token)
         self.check_payments = CheckPaymentResource(api_url, token)

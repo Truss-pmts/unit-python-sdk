@@ -28,6 +28,7 @@ from unit.models.api_token import APITokenDTO
 from unit.models.authorization import AuthorizationDTO
 from unit.models.authorization_request import PurchaseAuthorizationRequestDTO
 from unit.models.account_end_of_day import AccountEndOfDayDTO
+from unit.models.accrued_interest import AccruedInterestTotalDTO
 from unit.models.benificial_owner import BenificialOwnerDTO
 
 mappings = {
@@ -342,6 +343,9 @@ mappings = {
 
         "accountEndOfDay": lambda _id, _type, attributes, relationships:
         AccountEndOfDayDTO.from_json_api(_id, _type, attributes, relationships),
+
+        "accruedInterestTotal": lambda _id, _type, attributes, relationships:
+        AccruedInterestTotalDTO.from_json_api(_id, _type, attributes, relationships),
 
         "counterpartyBalance": lambda _id, _type, attributes, relationships:
         CounterpartyBalanceDTO.from_json_api(_id, _type, attributes, relationships),
