@@ -6,6 +6,7 @@ unit/__init__.py
 unit/api/__init__.py
 unit/api/account_end_of_day_resource.py
 unit/api/account_resource.py
+unit/api/accrued_interest_resource.py
 unit/api/ach_resource.py
 unit/api/api_token_resource.py
 unit/api/applicationForm_resource.py
@@ -19,6 +20,7 @@ unit/api/bill_pay_resource.py
 unit/api/card_resource.py
 unit/api/check_deposit_resource.py
 unit/api/check_payment_resource.py
+unit/api/check_registered_address.py
 unit/api/check_stop_payment_resource.py
 unit/api/counterparty_resource.py
 unit/api/customerToken_resource.py
@@ -38,6 +40,7 @@ unit/api/webhook_resource.py
 unit/models/__init__.py
 unit/models/account.py
 unit/models/account_end_of_day.py
+unit/models/accrued_interest.py
 unit/models/api_token.py
 unit/models/application.py
 unit/models/applicationForm.py
@@ -50,6 +53,7 @@ unit/models/bill_pay.py
 unit/models/card.py
 unit/models/check_deposit.py
 unit/models/check_payment.py
+unit/models/check_registered_address.py
 unit/models/check_stop_payment.py
 unit/models/codecs.py
 unit/models/counterparty.py
