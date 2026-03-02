@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+description: Coding conventions for the Unit Python SDK fork
+---
+
+## Unit Python SDK Conventions
+
+This is a fork of the Unit.co Python SDK. Follow the same Python style conventions as the API repo (keyword arguments, no docstrings, comments explain why not what).
+
+### Request Types
+
+- Every request type must implement `to_json_api()` returning a JSON API payload (`{"data": {"type": "...", "attributes": {...}}}`)
+- Use keyword arguments in constructors
+- Optional fields should default to `None` and be excluded from the serialized payload when not set
+
+### DTO Types
+
+- DTOs are response types instantiated by `DtoDecoder.decode()` from JSON API responses
+- Each DTO has an `id` and an `attributes` dict
+- DTOs are dataclass-style objects (plain `__init__` with attribute assignment)
+
+### Codec Registration
+
+When adding a new Unit API type:
+1. Create the DTO class in `unit/models/`
+2. Create the request class with `to_json_api()` in the same file
+3. Add the JSON API type string -> DTO class mapping to `mappings` in `unit/models/codecs.py`
+4. Add resource methods in `unit/api/` if needed
+
+### Resource Classes
+
+- All resource classes inherit from `BaseResource` (`unit/api/base_resource.py`)
+- Use `self._post()`, `self._get()`, `self._patch()` etc. from BaseResource
+- Resource methods return `UnitResponse` wrapper objects
