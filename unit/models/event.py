@@ -744,15 +744,26 @@ class PaymentCanceledEvent(BaseEvent):
     def from_json_api(_id, _type, attributes, relationships):
         return PaymentCanceledEvent(_id, date_utils.to_datetime(attributes["createdAt"]), attributes.get("tags"), relationships)
 
-class PaymentCanceledUpperCasedEvent(BaseEvent):
-    def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
+class PaymentCanceledUppercaseEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, previous_status: str, direction: str, amount: int,
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
         BaseEvent.__init__(self, id, created_at, tags, relationships)
         self.type = 'payment.Canceled'
+        self.attributes["previousStatus"] = previous_status
+        self.attributes["direction"] = direction
+        self.attributes["amount"] = amount
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return PaymentCanceledUpperCasedEvent(_id, date_utils.to_datetime(attributes["createdAt"]), attributes.get("tags"), relationships)
+        return PaymentCanceledUppercaseEvent(
+            _id,
+            date_utils.to_datetime(attributes["createdAt"]),
+            attributes["previousStatus"],
+            attributes["direction"],
+            attributes["amount"],
+            attributes.get("tags"),
+            relationships
+        )
 
 class PaymentRejectedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, reason: str, tags: Optional[Dict[str, str]],
@@ -929,7 +940,7 @@ EventDTO = Union[
     CheckPaymentDeliveredEvent, CheckPaymentReturnToSenderEvent, CheckPaymentCanceledEvent,
     CheckPaymentDeliveryStatusChangedEvent, CheckPaymentAdditionalVerificationRequiredEvent,
     CheckPaymentAdditionalVerificationApprovedEvent,
-    CustomerCreatedEvent, PaymentClearingEvent, PaymentSentEvent, PaymentReturnedEvent, PaymentCanceledEvent, PaymentCanceledUpperCasedEvent,
+    CustomerCreatedEvent, PaymentClearingEvent, PaymentSentEvent, PaymentReturnedEvent, PaymentCanceledEvent, PaymentCanceledUppercaseEvent,
     StatementsCreatedEvent, TransactionCreatedEvent, AccountReopenedEvent, RawUnitObject,
     StopPaymentCreatedEvent, StopPaymentPaymentStoppedEvent, StopPaymentDisabledEvent,
     DisputeCreatedEvent, DisputeStatusChangedEvent, ReceivedPaymentCreatedEvent

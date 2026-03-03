@@ -306,7 +306,7 @@ mappings = {
         PaymentCanceledEvent.from_json_api(_id, _type, attributes, relationships),
 
         "payment.Canceled": lambda _id, _type, attributes, relationships:
-        PaymentCanceledUpperCasedEvent.from_json_api(_id, _type, attributes, relationships),
+        PaymentCanceledUppercaseEvent.from_json_api(_id, _type, attributes, relationships),
 
         "payment.rejected": lambda _id, _type, attributes, relationships:
         PaymentRejectedEvent.from_json_api(_id, _type, attributes, relationships),
