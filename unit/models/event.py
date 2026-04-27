@@ -880,8 +880,8 @@ class ReceivedPaymentCreatedEvent(BaseEvent):
                  company_name: str,
                  counterparty_routing_number: str,
                  description: str,
-                 trace_number: str,
-                 sec_code: str,
+                 trace_number: Optional[str],
+                 sec_code: Optional[str],
                  return_cutoff_time: Optional[datetime],
                  can_be_reprocessed: Optional[bool],
                  addenda: Optional[str],
@@ -909,7 +909,7 @@ class ReceivedPaymentCreatedEvent(BaseEvent):
                                                   attributes["status"], attributes["type"], attributes["amount"],
                                                   attributes["completionDate"], attributes["companyName"],
                                                   attributes["counterpartyRoutingNumber"], attributes["description"],
-                                                  attributes["traceNumber"], attributes["secCode"],
+                                                  attributes.get("traceNumber"), attributes.get("secCode"),
                                                   attributes.get("returnCutoffTime"), attributes.get("canBeReprocessed"),
                                                   attributes.get("addenda"), attributes.get("tags"), relationships)
 
