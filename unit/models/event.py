@@ -793,6 +793,15 @@ class TransactionCreatedEvent(BaseEvent):
                                        attributes["direction"], attributes["amount"], attributes.get("tags"),
                                        relationships)
 
+class TransactionUpdatedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id, created_at, tags, relationships)
+        self.type = 'transaction.updated'
+    
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return TransactionUpdatedEvent(_id, date_utils.to_datetime(attributes["createdAt"]), attributes.get("tags"), relationships)
+
 class AccountReopenedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime,tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]]):
@@ -930,7 +939,7 @@ EventDTO = Union[
     CheckPaymentDeliveryStatusChangedEvent, CheckPaymentAdditionalVerificationRequiredEvent,
     CheckPaymentAdditionalVerificationApprovedEvent,
     CustomerCreatedEvent, PaymentClearingEvent, PaymentSentEvent, PaymentReturnedEvent, PaymentCanceledEvent, PaymentCanceledUpperCasedEvent,
-    StatementsCreatedEvent, TransactionCreatedEvent, AccountReopenedEvent, RawUnitObject,
+    StatementsCreatedEvent, TransactionCreatedEvent, TransactionUpdatedEvent, AccountReopenedEvent, RawUnitObject,
     StopPaymentCreatedEvent, StopPaymentPaymentStoppedEvent, StopPaymentDisabledEvent,
     DisputeCreatedEvent, DisputeStatusChangedEvent, ReceivedPaymentCreatedEvent
 ]

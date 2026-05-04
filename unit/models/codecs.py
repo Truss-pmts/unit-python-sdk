@@ -317,6 +317,9 @@ mappings = {
         "transaction.created": lambda _id, _type, attributes, relationships:
         TransactionCreatedEvent.from_json_api(_id, _type, attributes, relationships),
 
+        "transaction.updated": lambda _id, _type, attributes, relationships:
+        TransactionUpdatedEvent.from_json_api(_id, _type, attributes, relationships),
+
         "customer.created": lambda _id, _type, attributes, relationships:
         CustomerCreatedEvent.from_json_api(_id, _type, attributes, relationships),
 
