@@ -28,6 +28,8 @@ CheckPaymentReturnStatusReason = Literal[
     "UnauthorizedWarrantyBreach"
 ]
 CheckPaymentDeliveryStatus = Literal["Mailed", "InLocalArea", "Delivered", "Rerouted", "ReturnedToSender"]
+CheckPaymentImageSide = Literal["front", "back"]
+CheckPaymentImageKind = Literal["printed", "deposited"]
 
 
 class CheckPaymentDTO(object):

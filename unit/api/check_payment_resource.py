@@ -1,6 +1,12 @@
 from unit.api.base_resource import BaseResource
 from unit.models.authorization_request import *
-from unit.models.check_payment import ApproveCheckPaymentRequest, CheckPaymentDTO, ReturnCheckPaymentRequest
+from unit.models.check_payment import (
+    ApproveCheckPaymentRequest,
+    CheckPaymentDTO,
+    CheckPaymentImageKind,
+    CheckPaymentImageSide,
+    ReturnCheckPaymentRequest,
+)
 from unit.models.codecs import DtoDecoder
 from unit.models.payment import CreateCheckPaymentRequest
 
@@ -15,6 +21,16 @@ class CheckPaymentResource(BaseResource):
         if super().is_20x(response.status_code):
             data = response.json().get("data")
             return UnitResponse[check_payment_id](DtoDecoder.decode(data), None)
+
+    def get_image(
+        self,
+        check_payment_id: str,
+        side: CheckPaymentImageSide,
+        image_type: CheckPaymentImageKind,
+    ) -> Union[UnitResponse[bytes], UnitError]:
+        response = super().get(f"{self.resource}/{check_payment_id}/{side}/{image_type}")
+        if response.status_code == 200:
+            return UnitResponse[bytes](response.content, None)
         else:
             return UnitError.from_json_api(response.json())
 
