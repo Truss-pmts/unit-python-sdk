@@ -302,6 +302,10 @@ class IndividualApplicationDTO(object):
         business_vertical: Optional[BusinessVertical],
         tags: Optional[Dict[str, str]],
         relationships: Optional[Dict[str, Relationship]],
+        updated_at: Optional[datetime] = None,
+        nationality: Optional[str] = None,
+        industry: Optional[Industry] = None,
+        id_theft_score: Optional[int] = None,
         # V2 response fields
         account_purpose: Optional[str] = None,
         source_of_funds: Optional[str] = None,
@@ -315,6 +319,7 @@ class IndividualApplicationDTO(object):
         self.type = "individualApplication"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "fullName": full_name,
             "address": address,
             "dateOfBirth": date_of_birth,
@@ -322,10 +327,13 @@ class IndividualApplicationDTO(object):
             "phone": phone,
             "status": status,
             "ssn": ssn,
+            "nationality": nationality,
             "message": message,
             "ip": ip,
             "ein": ein,
             "dba": dba,
+            "industry": industry,
+            "idTheftScore": id_theft_score,
             "soleProprietorship": sole_proprietorship,
             "businessVertical": business_vertical,
             "tags": tags,
@@ -342,6 +350,11 @@ class IndividualApplicationDTO(object):
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
+        updated_at = (
+            date_utils.to_datetime(attributes.get("updatedAt"))
+            if attributes.get("updatedAt")
+            else None
+        )
         return IndividualApplicationDTO(
             id=_id,
             created_at=date_utils.to_datetime(attributes["createdAt"]),
@@ -360,6 +373,10 @@ class IndividualApplicationDTO(object):
             business_vertical=attributes.get("businessVertical"),
             tags=attributes.get("tags"),
             relationships=relationships,
+            updated_at=updated_at,
+            nationality=attributes.get("nationality"),
+            industry=attributes.get("industry"),
+            id_theft_score=attributes.get("idTheftScore"),
             account_purpose=attributes.get("accountPurpose"),
             source_of_funds=attributes.get("sourceOfFunds"),
             transaction_volume=attributes.get("transactionVolume"),
