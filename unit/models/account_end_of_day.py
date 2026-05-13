@@ -5,16 +5,20 @@ from unit.models import *
 
 class AccountEndOfDayDTO(object):
     def __init__(self, id: str, date: str, balance: int, hold: int, available: int,
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]], overdraft_limit: Optional[int] = None):
         self.id = id
         self.type = "accountEndOfDay"
-        self.attributes = {"date": date, "balance": balance, "hold": hold, "available": available}
+        self.attributes = {"date": date, "balance": balance, "hold": hold, "available": available,
+                           "overdraftLimit": overdraft_limit}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return AccountEndOfDayDTO(_id, attributes["date"], attributes["balance"], attributes["hold"],
-                                  attributes["available"], relationships)
+        return AccountEndOfDayDTO(
+            id=_id, date=attributes["date"], balance=attributes["balance"], hold=attributes["hold"],
+            available=attributes["available"], relationships=relationships,
+            overdraft_limit=attributes.get("overdraftLimit"),
+        )
 
 
 class ListAccountEndOfDayParams(UnitParams):
