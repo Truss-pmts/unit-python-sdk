@@ -7,20 +7,24 @@ CardStatus = Literal["Inactive", "Active", "Stolen", "Lost", "Frozen", "ClosedBy
 class IndividualDebitCardDTO(object):
     def __init__(self, id: str, created_at: datetime, last_4_digits: str, expiration_date: str, status: CardStatus,
                  shipping_address: Optional[Address], design: Optional[str],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]],
+                 updated_at: Optional[datetime] = None):
         self.id = id
         self.type = "individualDebitCard"
-        self.attributes = {"createdAt": created_at, "last4Digits": last_4_digits, "expirationDate": expiration_date,
-                           "status": status, "shippingAddress": shipping_address, "design": design}
+        self.attributes = {"createdAt": created_at, "updatedAt": updated_at, "last4Digits": last_4_digits,
+                           "expirationDate": expiration_date, "status": status, "shippingAddress": shipping_address,
+                           "design": design}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         shipping_address = Address.from_json_api(attributes.get("shippingAddress")) if attributes.get("shippingAddress") else None
+        updated_at = date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None
         return IndividualDebitCardDTO(
             _id, date_utils.to_datetime(attributes["createdAt"]), attributes["last4Digits"],
             attributes["expirationDate"], attributes["status"],
-            shipping_address, attributes.get("design"), relationships
+            shipping_address, attributes.get("design"), relationships,
+            updated_at=updated_at
         )
 
 
