@@ -223,7 +223,10 @@ class CardTransactionDTO(BaseTransactionDTO):
                  summary: str, card_last_4_digits: str, merchant: Optional[Merchant], recurring: Optional[bool],
                  interchange: Optional[int], payment_method: Optional[str], digital_wallet: Optional[str],
                  card_verification_data: Optional[Dict], card_network: Optional[str], tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]],
+                 gross_interchange: Optional[str] = None,
+                 rich_merchant_data: Optional[RichMerchantData] = None,
+                 currency_conversion: Optional[CurrencyConversion] = None):
         BaseTransactionDTO.__init__(self, id, created_at, direction, amount, balance, summary, tags, relationships)
         self.type = 'cardTransaction'
         self.attributes["cardLast4Digits"] = card_last_4_digits
@@ -231,21 +234,38 @@ class CardTransactionDTO(BaseTransactionDTO):
             self.attributes["merchant"] = merchant
         self.attributes["recurring"] = recurring
         self.attributes["interchange"] = interchange
+        self.attributes["grossInterchange"] = gross_interchange
         self.attributes["paymentMethod"] = payment_method
         self.attributes["digitalWallet"] = digital_wallet
         self.attributes["cardVerificationData"] = card_verification_data
         self.attributes["cardNetwork"] = card_network
+        self.attributes["richMerchantData"] = rich_merchant_data
+        self.attributes["currencyConversion"] = currency_conversion
 
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return CardTransactionDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["direction"],
-                                  attributes["amount"], attributes["balance"], attributes["summary"],
-                                  attributes["cardLast4Digits"], Merchant.from_json_api(attributes.get("merchant")),
-                                  attributes.get("recurring"), attributes.get("interchange"),
-                                  attributes.get("paymentMethod"), attributes.get("digitalWallet"),
-                                  attributes.get("cardVerificationData"), attributes.get("cardNetwork"),
-                                  attributes.get("tags"), relationships)
+        return CardTransactionDTO(
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            direction=attributes["direction"],
+            amount=attributes["amount"],
+            balance=attributes["balance"],
+            summary=attributes["summary"],
+            card_last_4_digits=attributes["cardLast4Digits"],
+            merchant=Merchant.from_json_api(attributes.get("merchant")),
+            recurring=attributes.get("recurring"),
+            interchange=attributes.get("interchange"),
+            payment_method=attributes.get("paymentMethod"),
+            digital_wallet=attributes.get("digitalWallet"),
+            card_verification_data=attributes.get("cardVerificationData"),
+            card_network=attributes.get("cardNetwork"),
+            tags=attributes.get("tags"),
+            relationships=relationships,
+            gross_interchange=attributes.get("grossInterchange"),
+            rich_merchant_data=RichMerchantData.from_json_api(attributes.get("richMerchantData")),
+            currency_conversion=CurrencyConversion.from_json_api(attributes.get("currencyConversion")),
+        )
 
 
 class CardReversalTransactionDTO(BaseTransactionDTO):
