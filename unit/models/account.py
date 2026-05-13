@@ -15,22 +15,29 @@ class DepositAccountDTO(object):
     def __init__(self, id: str, created_at: datetime, name: str, deposit_product: str, routing_number: str,
                  account_number: str, currency: str, balance: int, hold: int, available: int, status: AccountStatus,
                  tags: Optional[Dict[str, str]], close_reason: Optional[CloseReason],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]],
+                 updated_at: Optional[datetime] = None, freeze_reason: Optional[str] = None,
+                 fraud_reason: Optional[FraudReason] = None, daca_status: Optional[str] = None):
         self.id = id
         self.type = "depositAccount"
-        self.attributes = {"name": name, "createdAt": created_at, "depositProduct": deposit_product,
-                           "routingNumber": routing_number, "accountNumber": account_number, "currency": currency,
-                           "balance": balance, "hold": hold, "available": available, "status": status,
-                           "closeReason": close_reason, "tags": tags}
+        self.attributes = {"name": name, "createdAt": created_at, "updatedAt": updated_at,
+                           "depositProduct": deposit_product, "routingNumber": routing_number,
+                           "accountNumber": account_number, "currency": currency, "balance": balance, "hold": hold,
+                           "available": available, "status": status, "closeReason": close_reason,
+                           "freezeReason": freeze_reason, "fraudReason": fraud_reason, "dacaStatus": daca_status,
+                           "tags": tags}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
+        updated_at = date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None
         return DepositAccountDTO(
             _id, date_utils.to_datetime(attributes["createdAt"]), attributes["name"], attributes["depositProduct"],
             attributes["routingNumber"], attributes["accountNumber"], attributes["currency"], attributes["balance"],
             attributes["hold"], attributes["available"], attributes["status"], attributes.get("tags"),
-            attributes.get("closeReason"), relationships
+            attributes.get("closeReason"), relationships,
+            updated_at=updated_at, freeze_reason=attributes.get("freezeReason"),
+            fraud_reason=attributes.get("fraudReason"), daca_status=attributes.get("dacaStatus")
         )
 
 
