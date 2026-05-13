@@ -8,19 +8,23 @@ from unit.models import *
 class CounterpartyDTO(object):
     def __init__(self, id: str, created_at: datetime, name: str, routing_number: str, bank: Optional[str],
                  account_number: str, account_type: str, type: str, permissions: str,
-                 relationships: [Dict[str, Relationship]]):
+                 relationships: [Dict[str, Relationship]], tags: Optional[Dict[str, str]] = None):
         self.id = id
         self.type = "achCounterparty"
         self.attributes = {"createdAt": created_at, "name": name, "routingNumber": routing_number, "bank": bank,
                            "accountNumber": account_number, "accountType": account_type, "type": type,
-                           "permissions": permissions}
+                           "permissions": permissions, "tags": tags}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return CounterpartyDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["name"],
-                               attributes["routingNumber"], attributes.get("bank"), attributes["accountNumber"],
-                               attributes["accountType"], attributes["type"], attributes["permissions"], relationships)
+        return CounterpartyDTO(
+            id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]), name=attributes["name"],
+            routing_number=attributes["routingNumber"], bank=attributes.get("bank"),
+            account_number=attributes["accountNumber"], account_type=attributes["accountType"],
+            type=attributes["type"], permissions=attributes["permissions"], relationships=relationships,
+            tags=attributes.get("tags"),
+        )
 
 
 class CreateCounterpartyRequest(UnitRequest):
