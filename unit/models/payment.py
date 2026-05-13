@@ -23,20 +23,32 @@ class AchPaymentDTO(BasePayment):
     def __init__(self, id: str, created_at: datetime, status: PaymentStatus, counterparty: Counterparty, direction: str,
                  description: str, amount: int, addenda: Optional[str], reason: Optional[str],
                  settlement_date: Optional[datetime], tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]],
+                 expected_completion_date: Optional[datetime] = None,
+                 counterparty_verification_method: Optional[str] = None):
         BasePayment.__init__(self, id, created_at, status, direction, description, amount, reason, tags, relationships)
         self.type = 'achPayment'
         self.attributes["counterparty"] = counterparty
         self.attributes["addenda"] = addenda
+        self.attributes["settlementDate"] = settlement_date
+        self.attributes["expectedCompletionDate"] = expected_completion_date
+        self.attributes["counterpartyVerificationMethod"] = counterparty_verification_method
         self.settlement_date = settlement_date
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         settlement_date = date_utils.to_date(attributes.get("settlementDate")) if attributes.get("settlementDate") else None
+        expected_completion_date = (
+            date_utils.to_date(attributes.get("expectedCompletionDate"))
+            if attributes.get("expectedCompletionDate")
+            else None
+        )
         return AchPaymentDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["status"],
                              attributes["counterparty"], attributes["direction"], attributes["description"],
                              attributes["amount"], attributes.get("addenda"), attributes.get("reason"), settlement_date,
-                             attributes.get("tags"), relationships)
+                             attributes.get("tags"), relationships,
+                             expected_completion_date=expected_completion_date,
+                             counterparty_verification_method=attributes.get("counterpartyVerificationMethod"))
 
 class SimulateIncomingAchPaymentDTO(BasePayment):
     def __init__(self, id: str, created_at: datetime, status: PaymentStatus, direction: str,
