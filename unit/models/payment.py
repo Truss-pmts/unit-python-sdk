@@ -160,13 +160,15 @@ class AchReceivedPaymentDTO(object):
                  completion_date: datetime, return_reason: Optional[str], amount: int, description: str,
                  addenda: Optional[str], company_name: str, counterparty_routing_number: str, trace_number: str,
                  sec_code: Optional[str], return_cutoff_time: Optional[datetime], can_be_reprocessed: Optional[bool],
-                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]],
+                 originator_entity_id: Optional[str] = None, receiving_entity_name: Optional[str] = None):
         self.type = "achReceivedPayment"
         self.attributes = {"createdAt": created_at, "status": status, "wasAdvanced": was_advanced,
                            "completionDate": completion_date, "returnReason": return_reason, "description": description,
                            "amount": amount, "addenda": addenda, "companyName": company_name,
                            "counterpartyRoutingNumber": counterparty_routing_number, "traceNumber": trace_number,
                            "secCode": sec_code, "returnCutoffTime": return_cutoff_time, "canBeReprocessed": can_be_reprocessed,
+                           "originatorEntityId": originator_entity_id, "receivingEntityName": receiving_entity_name,
                            "tags": tags}
         self.relationships = relationships
 
@@ -178,7 +180,9 @@ class AchReceivedPaymentDTO(object):
                                      attributes.get("addenda"), attributes.get("companyName"),
                                      attributes.get("counterpartyRoutingNumber"), attributes.get("traceNumber"),
                                      attributes.get("secCode"), attributes.get("returnCutoffTime"), attributes.get("canBeReprocessed"),
-                                     attributes.get("tags"), relationships)
+                                     attributes.get("tags"), relationships,
+                                     originator_entity_id=attributes.get("originatorEntityId"),
+                                     receiving_entity_name=attributes.get("receivingEntityName"))
 
 class CreatePaymentBaseRequest(UnitRequest):
     def __init__(self, amount: int, description: str, relationships: Dict[str, Relationship],
