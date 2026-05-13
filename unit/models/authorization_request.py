@@ -11,27 +11,60 @@ class PurchaseAuthorizationRequestDTO(object):
     def __init__(self, id: str, created_at: datetime, amount: int, status: PurchaseAuthorizationRequestStatus,
                  partial_approval_allowed: str, approved_amount: Optional[int], decline_reason: Optional[DeclineReason],
                  merchant_name: str, merchant_type: int, merchant_category: str, merchant_location: Optional[str],
-                 recurring: bool, tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+                 recurring: bool, tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]],
+                 merchant_id: Optional[str] = None, ecommerce: Optional[bool] = None,
+                 card_present: Optional[bool] = None, payment_method: Optional[str] = None,
+                 digital_wallet: Optional[str] = None,
+                 card_verification_data: Optional[CardVerificationData] = None,
+                 card_network: Optional[str] = None,
+                 healthcare_amounts: Optional[HealthcareAmounts] = None,
+                 cash_withdrawal_amount: Optional[int] = None,
+                 currency_conversion: Optional[CurrencyConversion] = None,
+                 is_international: Optional[bool] = None):
         self.id = id
         self.type = "purchaseAuthorizationRequest"
         self.attributes = {"createdAt": created_at, "amount": amount, "status": status,
                            "partialApprovalAllowed": partial_approval_allowed, "approvedAmount": approved_amount,
-                           "declineReason": decline_reason, "merchant": { "name": merchant_name, "type": merchant_type,
-                                                                          "category": merchant_category,
-                                                                          "location": merchant_location},
-                           "recurring": recurring, "tags": tags}
+                           "declineReason": decline_reason, "merchant": {"name": merchant_name, "type": merchant_type,
+                                                                         "category": merchant_category,
+                                                                         "location": merchant_location,
+                                                                         "id": merchant_id},
+                           "recurring": recurring, "tags": tags, "ecommerce": ecommerce, "cardPresent": card_present,
+                           "paymentMethod": payment_method, "digitalWallet": digital_wallet,
+                           "cardVerificationData": card_verification_data, "cardNetwork": card_network,
+                           "healthcareAmounts": healthcare_amounts, "cashWithdrawalAmount": cash_withdrawal_amount,
+                           "currencyConversion": currency_conversion, "isInternational": is_international}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return PurchaseAuthorizationRequestDTO(_id, date_utils.to_datetime(attributes["createdAt"]),
-                                               attributes["amount"], attributes["status"],
-                                               attributes.get("partialApprovalAllowed"),
-                                               attributes.get("approvedAmount"), attributes.get("declineReason"),
-                                               attributes["merchant"]["name"], attributes["merchant"]["type"],
-                                               attributes["merchant"].get("category"),
-                                               attributes["merchant"].get("location"), attributes["recurring"],
-                                               attributes.get("tags"), relationships)
+        return PurchaseAuthorizationRequestDTO(
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            amount=attributes["amount"],
+            status=attributes["status"],
+            partial_approval_allowed=attributes.get("partialApprovalAllowed"),
+            approved_amount=attributes.get("approvedAmount"),
+            decline_reason=attributes.get("declineReason"),
+            merchant_name=attributes["merchant"]["name"],
+            merchant_type=attributes["merchant"]["type"],
+            merchant_category=attributes["merchant"].get("category"),
+            merchant_location=attributes["merchant"].get("location"),
+            merchant_id=attributes["merchant"].get("id"),
+            recurring=attributes["recurring"],
+            tags=attributes.get("tags"),
+            relationships=relationships,
+            ecommerce=attributes.get("ecommerce"),
+            card_present=attributes.get("cardPresent"),
+            payment_method=attributes.get("paymentMethod"),
+            digital_wallet=attributes.get("digitalWallet"),
+            card_verification_data=CardVerificationData.from_json_api(attributes.get("cardVerificationData")),
+            card_network=attributes.get("cardNetwork"),
+            healthcare_amounts=HealthcareAmounts.from_json_api(attributes.get("healthcareAmounts")),
+            cash_withdrawal_amount=attributes.get("cashWithdrawalAmount"),
+            currency_conversion=CurrencyConversion.from_json_api(attributes.get("currencyConversion")),
+            is_international=attributes.get("isInternational"),
+        )
 
 
 class ListPurchaseAuthorizationRequestParams(UnitParams):

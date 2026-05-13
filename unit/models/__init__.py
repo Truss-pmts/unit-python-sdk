@@ -503,6 +503,33 @@ class DeviceFingerprint(UnitDTO):
         return cls(value=data["value"], provider=data["provider"])
 
 
+class HealthcareAmounts(UnitDTO):
+    def __init__(self, transit_amount: Optional[int] = None, prescription_rx_amount: Optional[int] = None,
+                 vision_optical_amount: Optional[int] = None,
+                 clinic_other_qualified_medical_amount: Optional[int] = None,
+                 dental_amount: Optional[int] = None, total_healthcare_amount: Optional[int] = None):
+        self.transit_amount = transit_amount
+        self.prescription_rx_amount = prescription_rx_amount
+        self.vision_optical_amount = vision_optical_amount
+        self.clinic_other_qualified_medical_amount = clinic_other_qualified_medical_amount
+        self.dental_amount = dental_amount
+        self.total_healthcare_amount = total_healthcare_amount
+
+    @staticmethod
+    def from_json_api(data: Dict):
+        if not data:
+            return None
+
+        return HealthcareAmounts(
+            transit_amount=data.get("transitAmount"),
+            prescription_rx_amount=data.get("prescriptionRXAmount"),
+            vision_optical_amount=data.get("visionOpticalAmount"),
+            clinic_other_qualified_medical_amount=data.get("clinicOtherQualifiedMedicalAmount"),
+            dental_amount=data.get("dentalAmount"),
+            total_healthcare_amount=data.get("totalHealthcareAmount"),
+        )
+
+
 class CurrencyConversion(UnitDTO):
     def __init__(self, original_currency: str, amount_in_original_currency: int, fx_rate: Optional[str]):
         self.original_currency = original_currency
