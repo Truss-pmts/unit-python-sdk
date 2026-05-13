@@ -11,13 +11,15 @@ class IndividualCustomerDTO(object):
                  phone: Phone, email: str, ssn: Optional[str], passport: Optional[str], nationality: Optional[str],
                  authorized_users: [AuthorizedUser], tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]], status: CustomerStatus,
-                 archive_reason: Optional[ArchiveReason]):
+                 archive_reason: Optional[ArchiveReason],
+                 ein: Optional[str] = None, eligible_products: Optional[List[str]] = None):
         self.id = id
         self.type = 'individualCustomer'
         self.attributes = {"createdAt": created_at, "fullName": full_name, "dateOfBirth": date_of_birth,
                            "address": address, "phone": phone, "email": email, "ssn": ssn, "passport": passport,
                            "nationality": nationality, "authorizedUsers": authorized_users, "tags": tags,
-                           "status": status, "archiveReason": archive_reason}
+                           "status": status, "archiveReason": archive_reason, "ein": ein,
+                           "eligibleProducts": eligible_products}
         self.relationships = relationships
 
     @staticmethod
@@ -28,7 +30,8 @@ class IndividualCustomerDTO(object):
             Address.from_json_api(attributes["address"]), Phone.from_json_api(attributes["phone"]),
             attributes["email"], attributes.get("ssn"), attributes.get("passport"), attributes.get("nationality"),
             AuthorizedUser.from_json_api(attributes["authorizedUsers"]), attributes.get("tags"), relationships,
-            attributes.get("status"), attributes.get("archiveReason")
+            attributes.get("status"), attributes.get("archiveReason"),
+            ein=attributes.get("ein"), eligible_products=attributes.get("eligibleProducts")
         )
 
 
