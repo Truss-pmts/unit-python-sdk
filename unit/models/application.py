@@ -416,6 +416,9 @@ class BusinessApplicationDTO(object):
         operating_address: Optional[Address],
         tags: Optional[Dict[str, str]],
         relationships: Optional[Dict[str, Relationship]],
+        updated_at: Optional[datetime] = None,
+        industry: Optional[Industry] = None,
+        stock_symbol: Optional[str] = None,
         # V2 response fields
         account_purpose: Optional[str] = None,
         source_of_funds: Optional[str] = None,
@@ -428,6 +431,7 @@ class BusinessApplicationDTO(object):
         self.type = "businessApplication"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "name": name,
             "address": address,
             "phone": phone,
@@ -439,6 +443,7 @@ class BusinessApplicationDTO(object):
             "ein": ein,
             "entityType": entity_type,
             "dba": dba,
+            "industry": industry,
             "website": website,
             "yearOfIncorporation": year_of_incorporation,
             "businessVertical": business_vertical,
@@ -446,6 +451,7 @@ class BusinessApplicationDTO(object):
             "numberOfEmployees": number_of_employees,
             "cashFlow": cash_flow,
             "countriesOfOperation": countries_of_operation,
+            "stockSymbol": stock_symbol,
             "contact": contact,
             "officer": officer,
             "beneficialOwners": beneficial_owners,
@@ -466,6 +472,11 @@ class BusinessApplicationDTO(object):
         operating_address = (
             Address.from_json_api(attributes["operatingAddress"])
             if attributes.get("operatingAddress")
+            else None
+        )
+        updated_at = (
+            date_utils.to_datetime(attributes.get("updatedAt"))
+            if attributes.get("updatedAt")
             else None
         )
         return BusinessApplicationDTO(
@@ -495,6 +506,9 @@ class BusinessApplicationDTO(object):
             operating_address=operating_address,
             tags=attributes.get("tags"),
             relationships=relationships,
+            updated_at=updated_at,
+            industry=attributes.get("industry"),
+            stock_symbol=attributes.get("stockSymbol"),
             account_purpose=attributes.get("accountPurpose"),
             source_of_funds=attributes.get("sourceOfFunds"),
             transaction_volume=attributes.get("transactionVolume"),
