@@ -18,16 +18,18 @@ class DisputeDTO(object):
         status_history: List[Dict[str, str]],
         status: DisputeStatus,
         description: str,
-        dispute_type: str,
+        dispute_type: Optional[str],
         created_at: datetime,
         amount: int,
         decision_reason: Optional[str],
         relationships: Optional[Dict[str, Relationship]],
+        updated_at: Optional[datetime] = None,
     ):
         self.id = id
         self.type = "dispute"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "source": source,
             "statusHistory": status_history,
             "status": status,
@@ -41,14 +43,15 @@ class DisputeDTO(object):
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         return DisputeDTO(
-            _id,
-            date_utils.to_datetime(attributes["createdAt"]),
-            attributes["source"],
-            attributes["statusHistory"],
-            attributes["status"],
-            attributes["description"],
-            attributes["disputeType"],
-            attributes["amount"],
-            attributes.get("decisionReason"),
-            relationships,
+            id=_id,
+            source=attributes["source"],
+            status_history=attributes["statusHistory"],
+            status=attributes["status"],
+            description=attributes["description"],
+            dispute_type=attributes.get("disputeType"),
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            amount=attributes["amount"],
+            decision_reason=attributes.get("decisionReason"),
+            relationships=relationships,
+            updated_at=date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None,
         )
