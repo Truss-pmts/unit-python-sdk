@@ -418,11 +418,15 @@ class BusinessApplicationDTO(object):
         business_industry: Optional[str] = None,
         business_description: Optional[str] = None,
         is_regulated: Optional[bool] = None,
+        updated_at: Optional[datetime] = None,
+        industry: Optional[Industry] = None,
+        stock_symbol: Optional[str] = None,
     ):
         self.id = id
         self.type = "businessApplication"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "name": name,
             "address": address,
             "phone": phone,
@@ -432,6 +436,7 @@ class BusinessApplicationDTO(object):
             "message": message,
             "ip": ip,
             "ein": ein,
+            "industry": industry,
             "entityType": entity_type,
             "dba": dba,
             "website": website,
@@ -441,6 +446,7 @@ class BusinessApplicationDTO(object):
             "numberOfEmployees": number_of_employees,
             "cashFlow": cash_flow,
             "countriesOfOperation": countries_of_operation,
+            "stockSymbol": stock_symbol,
             "contact": contact,
             "officer": officer,
             "beneficialOwners": beneficial_owners,
@@ -496,6 +502,9 @@ class BusinessApplicationDTO(object):
             business_industry=attributes.get("businessIndustry"),
             business_description=attributes.get("businessDescription"),
             is_regulated=attributes.get("isRegulated"),
+            updated_at=date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None,
+            industry=attributes.get("industry"),
+            stock_symbol=attributes.get("stockSymbol"),
         )
 
 
