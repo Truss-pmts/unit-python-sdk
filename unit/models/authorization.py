@@ -5,23 +5,85 @@ from unit.utils import date_utils
 
 AuthorizationStatus = Literal["Authorized", "Completed", "Canceled", "Declined"]
 
+
 class AuthorizationDTO(object):
-    def __init__(self, id: str, created_at: datetime, amount: int, card_last_4_digits: str, status: AuthorizationStatus,
-                 merchant: Merchant, recurring: bool, tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
+    def __init__(
+        self,
+        id: str,
+        created_at: datetime,
+        amount: int,
+        card_last_4_digits: str,
+        status: AuthorizationStatus,
+        merchant: Merchant,
+        recurring: bool,
+        relationships: Optional[Dict[str, Relationship]] = None,
+        tags: Optional[Dict[str, str]] = None,
+        decline_reason: Optional[str] = None,
+        decline_description: Optional[str] = None,
+        declined_by: Optional[str] = None,
+        payment_method: Optional[str] = None,
+        digital_wallet: Optional[str] = None,
+        card_verification_data: Optional[CardVerificationData] = None,
+        card_network: Optional[str] = None,
+        cash_withdrawal_amount: Optional[int] = None,
+        summary: Optional[str] = None,
+        rich_merchant_data: Optional[RichMerchantData] = None,
+        currency_conversion: Optional[CurrencyConversion] = None,
+    ):
         self.id = id
         self.type = "authorization"
-        self.attributes = {"createdAt": created_at, "amount": amount, "cardLast4Digits": card_last_4_digits,
-                           "status": status, "merchant": merchant,
-                           "recurring": recurring, "tags": tags}
+        self.attributes = {
+            "createdAt": created_at,
+            "amount": amount,
+            "cardLast4Digits": card_last_4_digits,
+            "status": status,
+            "merchant": merchant,
+            "recurring": recurring,
+            "tags": tags,
+            "declineReason": decline_reason,
+            "declineDescription": decline_description,
+            "declinedBy": declined_by,
+            "paymentMethod": payment_method,
+            "digitalWallet": digital_wallet,
+            "cardVerificationData": card_verification_data,
+            "cardNetwork": card_network,
+            "cashWithdrawalAmount": cash_withdrawal_amount,
+            "summary": summary,
+            "richMerchantData": rich_merchant_data,
+            "currencyConversion": currency_conversion,
+        }
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return AuthorizationDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["amount"],
-                                attributes["cardLast4Digits"], attributes["status"],
-                                Merchant.from_json_api(attributes["merchant"]), attributes["recurring"],
-                                attributes.get("tags"), relationships)
+        return AuthorizationDTO(
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            amount=attributes["amount"],
+            card_last_4_digits=attributes["cardLast4Digits"],
+            status=attributes["status"],
+            merchant=Merchant.from_json_api(attributes["merchant"]),
+            recurring=attributes["recurring"],
+            relationships=relationships,
+            tags=attributes.get("tags"),
+            decline_reason=attributes.get("declineReason"),
+            decline_description=attributes.get("declineDescription"),
+            declined_by=attributes.get("declinedBy"),
+            payment_method=attributes.get("paymentMethod"),
+            digital_wallet=attributes.get("digitalWallet"),
+            card_verification_data=CardVerificationData.from_json_api(
+                attributes.get("cardVerificationData")
+            ),
+            card_network=attributes.get("cardNetwork"),
+            cash_withdrawal_amount=attributes.get("cashWithdrawalAmount"),
+            summary=attributes.get("summary"),
+            rich_merchant_data=RichMerchantData.from_json_api(
+                attributes.get("richMerchantData")
+            ),
+            currency_conversion=CurrencyConversion.from_json_api(
+                attributes.get("currencyConversion")
+            ),
+        )
 
 
 class ListAuthorizationParams(UnitParams):

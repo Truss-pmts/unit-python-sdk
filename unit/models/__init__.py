@@ -517,6 +517,20 @@ class CurrencyConversion(UnitDTO):
         return CurrencyConversion(data["originalCurrency"], data["amountInOriginalCurrency"], data.get("fxRate"))
 
 
+class CardVerificationData(UnitDTO):
+    def __init__(self, verification_method: Optional[str] = None):
+        self.verification_method = verification_method
+
+    @staticmethod
+    def from_json_api(data: Dict):
+        if not data:
+            return None
+
+        return CardVerificationData(
+            verification_method=data.get("verificationMethod"),
+        )
+
+
 class RichMerchantDataFacilitator(object):
     def __init__(self, name: str, _type: Optional[str], logo: Optional[str]):
         self.name = name
@@ -585,7 +599,13 @@ class RichMerchantData(UnitDTO):
         if not data:
             return None
 
-        return RichMerchantData(data["name"], data.get("website"), data.get("logo"), data.get("phone"),
-                                RichMerchantDataCategory.from_json_api(data.get("categories")), data.get("address"),
-                                Coordinates.from_json_api(data.get("coordinates")),
-                                RichMerchantDataFacilitator.from_json_api(data.get("facilitators")))
+        return RichMerchantData(
+            name=data["name"],
+            website=data.get("website"),
+            logo=data.get("logo"),
+            phone=data.get("phone"),
+            categories=RichMerchantDataCategory.from_json_api(data.get("categories")),
+            address=RichMerchantDataAddress.from_json_api(data.get("address")),
+            coordinates=Coordinates.from_json_api(data.get("coordinates")),
+            facilitators=RichMerchantDataFacilitator.from_json_api(data.get("facilitators")),
+        )
