@@ -11,24 +11,31 @@ class IndividualCustomerDTO(object):
                  phone: Phone, email: str, ssn: Optional[str], passport: Optional[str], nationality: Optional[str],
                  authorized_users: [AuthorizedUser], tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]], status: CustomerStatus,
-                 archive_reason: Optional[ArchiveReason]):
+                 archive_reason: Optional[ArchiveReason], eligible_products: Optional[List[str]] = None,
+                 ein: Optional[str] = None):
         self.id = id
         self.type = 'individualCustomer'
         self.attributes = {"createdAt": created_at, "fullName": full_name, "dateOfBirth": date_of_birth,
                            "address": address, "phone": phone, "email": email, "ssn": ssn, "passport": passport,
-                           "nationality": nationality, "authorizedUsers": authorized_users, "tags": tags,
+                           "nationality": nationality, "ein": ein, "authorizedUsers": authorized_users,
+                           "eligibleProducts": eligible_products, "tags": tags,
                            "status": status, "archiveReason": archive_reason}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         return IndividualCustomerDTO(
-            _id, date_utils.to_datetime(attributes["createdAt"]),
-            FullName.from_json_api(attributes["fullName"]), date_utils.to_date(attributes["dateOfBirth"]),
-            Address.from_json_api(attributes["address"]), Phone.from_json_api(attributes["phone"]),
-            attributes["email"], attributes.get("ssn"), attributes.get("passport"), attributes.get("nationality"),
-            AuthorizedUser.from_json_api(attributes["authorizedUsers"]), attributes.get("tags"), relationships,
-            attributes.get("status"), attributes.get("archiveReason")
+            id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
+            full_name=FullName.from_json_api(attributes["fullName"]),
+            date_of_birth=date_utils.to_date(attributes["dateOfBirth"]),
+            address=Address.from_json_api(attributes["address"]),
+            phone=Phone.from_json_api(attributes["phone"]),
+            email=attributes["email"], ssn=attributes.get("ssn"), passport=attributes.get("passport"),
+            nationality=attributes.get("nationality"),
+            authorized_users=AuthorizedUser.from_json_api(attributes["authorizedUsers"]),
+            tags=attributes.get("tags"), relationships=relationships, status=attributes.get("status"),
+            archive_reason=attributes.get("archiveReason"),
+            eligible_products=attributes.get("eligibleProducts"), ein=attributes.get("ein"),
         )
 
 
@@ -37,25 +44,30 @@ class BusinessCustomerDTO(object):
                  state_of_incorporation: str, ein: str, entity_type: EntityType, contact: BusinessContact,
                  authorized_users: [AuthorizedUser], dba: Optional[str], tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]], status: CustomerStatus,
-                 archive_reason: Optional[ArchiveReason]):
+                 archive_reason: Optional[ArchiveReason], eligible_products: Optional[List[str]] = None):
         self.id = id
         self.type = 'businessCustomer'
         self.attributes = {"createdAt": created_at, "name": name, "address": address, "phone": phone,
                            "stateOfIncorporation": state_of_incorporation, "ein": ein, "entityType": entity_type,
-                           "contact": contact, "authorizedUsers": authorized_users, "dba": dba, "tags": tags,
+                           "contact": contact, "authorizedUsers": authorized_users, "dba": dba,
+                           "eligibleProducts": eligible_products, "tags": tags,
                            "status": status, "archiveReason": archive_reason}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         return BusinessCustomerDTO(
-            _id, date_utils.to_datetime(attributes["createdAt"]), attributes["name"],
-            Address.from_json_api(attributes["address"]), Phone.from_json_api(attributes["phone"]),
-            attributes["stateOfIncorporation"], attributes["ein"], attributes["entityType"],
-            BusinessContact.from_json_api(attributes["contact"]),
-            AuthorizedUser.from_json_api(attributes["authorizedUsers"]),
-            attributes.get("dba"), attributes.get("tags"), relationships, attributes.get("status"),
-            attributes.get("archiveReason"))
+            id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]), name=attributes["name"],
+            address=Address.from_json_api(attributes["address"]),
+            phone=Phone.from_json_api(attributes["phone"]),
+            state_of_incorporation=attributes["stateOfIncorporation"], ein=attributes["ein"],
+            entity_type=attributes["entityType"],
+            contact=BusinessContact.from_json_api(attributes["contact"]),
+            authorized_users=AuthorizedUser.from_json_api(attributes["authorizedUsers"]),
+            dba=attributes.get("dba"), tags=attributes.get("tags"), relationships=relationships,
+            status=attributes.get("status"), archive_reason=attributes.get("archiveReason"),
+            eligible_products=attributes.get("eligibleProducts"),
+        )
 
 CustomerDTO = Union[IndividualCustomerDTO, BusinessCustomerDTO]
 
