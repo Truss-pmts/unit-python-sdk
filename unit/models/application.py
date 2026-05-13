@@ -310,11 +310,16 @@ class IndividualApplicationDTO(object):
         is_incorporated: Optional[bool] = None,
         website: Optional[str] = None,
         countries_of_operation: Optional[List[str]] = None,
+        updated_at: Optional[datetime] = None,
+        nationality: Optional[str] = None,
+        industry: Optional[Industry] = None,
+        id_theft_score: Optional[int] = None,
     ):
         self.id = id
         self.type = "individualApplication"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "fullName": full_name,
             "address": address,
             "dateOfBirth": date_of_birth,
@@ -322,12 +327,15 @@ class IndividualApplicationDTO(object):
             "phone": phone,
             "status": status,
             "ssn": ssn,
+            "nationality": nationality,
             "message": message,
             "ip": ip,
             "ein": ein,
             "dba": dba,
             "soleProprietorship": sole_proprietorship,
+            "industry": industry,
             "businessVertical": business_vertical,
+            "idTheftScore": id_theft_score,
             "tags": tags,
             # V2 fields
             "accountPurpose": account_purpose,
@@ -367,6 +375,10 @@ class IndividualApplicationDTO(object):
             is_incorporated=attributes.get("isIncorporated"),
             website=attributes.get("website"),
             countries_of_operation=attributes.get("countriesOfOperation"),
+            updated_at=date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None,
+            nationality=attributes.get("nationality"),
+            industry=attributes.get("industry"),
+            id_theft_score=attributes.get("idTheftScore"),
         )
 
 
