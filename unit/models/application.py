@@ -421,11 +421,15 @@ class BusinessApplicationDTO(object):
         business_industry: Optional[str] = None,
         business_description: Optional[str] = None,
         is_regulated: Optional[bool] = None,
+        updated_at: Optional[datetime] = None,
+        industry: Optional[Industry] = None,
+        stock_symbol: Optional[str] = None,
     ):
         self.id = id
         self.type = "businessApplication"
         self.attributes = {
             "createdAt": created_at,
+            "updatedAt": updated_at,
             "name": name,
             "address": address,
             "phone": phone,
@@ -436,6 +440,7 @@ class BusinessApplicationDTO(object):
             "ip": ip,
             "ein": ein,
             "entityType": entity_type,
+            "industry": industry,
             "dba": dba,
             "website": website,
             "yearOfIncorporation": year_of_incorporation,
@@ -444,6 +449,7 @@ class BusinessApplicationDTO(object):
             "numberOfEmployees": number_of_employees,
             "cashFlow": cash_flow,
             "countriesOfOperation": countries_of_operation,
+            "stockSymbol": stock_symbol,
             "contact": contact,
             "officer": officer,
             "beneficialOwners": beneficial_owners,
@@ -469,6 +475,7 @@ class BusinessApplicationDTO(object):
         return BusinessApplicationDTO(
             id=_id,
             created_at=date_utils.to_datetime(attributes["createdAt"]),
+            updated_at=date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None,
             name=attributes.get("name"),
             address=Address.from_json_api(attributes["address"]),
             phone=Phone.from_json_api(attributes["phone"]),
@@ -483,6 +490,7 @@ class BusinessApplicationDTO(object):
             ip=attributes.get("ip"),
             ein=attributes.get("ein"),
             dba=attributes.get("dba"),
+            industry=attributes.get("industry"),
             website=attributes.get("website"),
             year_of_incorporation=attributes.get("yearOfIncorporation"),
             business_vertical=attributes.get("businessVertical"),
@@ -490,6 +498,7 @@ class BusinessApplicationDTO(object):
             number_of_employees=attributes.get("numberOfEmployees"),
             cash_flow=attributes.get("cashFlow"),
             countries_of_operation=attributes.get("countriesOfOperation"),
+            stock_symbol=attributes.get("stockSymbol"),
             operating_address=operating_address,
             tags=attributes.get("tags"),
             relationships=relationships,
