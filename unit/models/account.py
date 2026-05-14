@@ -11,26 +11,37 @@ CreditAccountType = "creditAccount"
 DepositAccountType = "depositAccount"
 AccountTypes = Literal[CreditAccountType, DepositAccountType]
 
+DacaStatus = Literal["Entered", "Activated"]
+
+
 class DepositAccountDTO(object):
     def __init__(self, id: str, created_at: datetime, name: str, deposit_product: str, routing_number: str,
                  account_number: str, currency: str, balance: int, hold: int, available: int, status: AccountStatus,
                  tags: Optional[Dict[str, str]], close_reason: Optional[CloseReason],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]],
+                 updated_at: Optional[datetime] = None, freeze_reason: Optional[str] = None,
+                 fraud_reason: Optional[FraudReason] = None, daca_status: Optional[DacaStatus] = None):
         self.id = id
         self.type = "depositAccount"
-        self.attributes = {"name": name, "createdAt": created_at, "depositProduct": deposit_product,
-                           "routingNumber": routing_number, "accountNumber": account_number, "currency": currency,
-                           "balance": balance, "hold": hold, "available": available, "status": status,
-                           "closeReason": close_reason, "tags": tags}
+        self.attributes = {"name": name, "createdAt": created_at, "updatedAt": updated_at,
+                           "depositProduct": deposit_product, "routingNumber": routing_number,
+                           "accountNumber": account_number, "currency": currency, "balance": balance, "hold": hold,
+                           "available": available, "status": status, "freezeReason": freeze_reason,
+                           "closeReason": close_reason, "fraudReason": fraud_reason, "dacaStatus": daca_status,
+                           "tags": tags}
         self.relationships = relationships
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
         return DepositAccountDTO(
-            _id, date_utils.to_datetime(attributes["createdAt"]), attributes["name"], attributes["depositProduct"],
-            attributes["routingNumber"], attributes["accountNumber"], attributes["currency"], attributes["balance"],
-            attributes["hold"], attributes["available"], attributes["status"], attributes.get("tags"),
-            attributes.get("closeReason"), relationships
+            id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]), name=attributes["name"],
+            deposit_product=attributes["depositProduct"], routing_number=attributes["routingNumber"],
+            account_number=attributes["accountNumber"], currency=attributes["currency"], balance=attributes["balance"],
+            hold=attributes["hold"], available=attributes["available"], status=attributes["status"],
+            tags=attributes.get("tags"), close_reason=attributes.get("closeReason"), relationships=relationships,
+            updated_at=date_utils.to_datetime(attributes.get("updatedAt")) if attributes.get("updatedAt") else None,
+            freeze_reason=attributes.get("freezeReason"), fraud_reason=attributes.get("fraudReason"),
+            daca_status=attributes.get("dacaStatus")
         )
 
 
