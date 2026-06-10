@@ -1,3 +1,5 @@
+import json
+
 from unit.utils import date_utils
 from unit.models import *
 
@@ -52,3 +54,40 @@ class DisputeDTO(object):
             attributes.get("decisionReason"),
             relationships,
         )
+
+
+class SimulateDisputeRequest(UnitRequest):
+    def __init__(self, account_id: str, transaction_id: str, amount: Optional[int] = None):
+        self.account_id = account_id
+        self.transaction_id = transaction_id
+        self.amount = amount
+
+    def to_json_api(self) -> Dict:
+        payload = {
+            "data": {
+                "type": "dispute",
+                "attributes": {},
+                "relationships": {
+                    "account": {
+                        "data": {
+                            "type": "account",
+                            "id": self.account_id
+                        }
+                    },
+                    "transaction": {
+                        "data": {
+                            "type": "transaction",
+                            "id": self.transaction_id
+                        }
+                    }
+                }
+            }
+        }
+
+        if self.amount is not None:
+            payload["data"]["attributes"]["amount"] = self.amount
+
+        return payload
+
+    def __repr__(self):
+        return json.dumps(self.to_json_api())
