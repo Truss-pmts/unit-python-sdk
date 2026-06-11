@@ -26,3 +26,19 @@ class AuthorizationResource(BaseResource):
             return UnitResponse[AuthorizationDTO](DtoDecoder.decode(data), None)
         else:
             return UnitError.from_json_api(response.json())
+
+    def sandbox_increase(self, request: SimulateAuthorizationIncrease) -> Union[UnitResponse[AuthorizationDTO], UnitError]:
+        response = super().post(f"sandbox/{self.resource}/{request.authorization_id}/increase", request.to_json_api())
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            return UnitResponse[AuthorizationDTO](DtoDecoder.decode(data), None)
+        else:
+            return UnitError.from_json_api(response.json())
+
+    def sandbox_cancel(self, request: SimulateAuthorizationCancel) -> Union[UnitResponse[AuthorizationDTO], UnitError]:
+        response = super().post(f"sandbox/{self.resource}/{request.authorization_id}/cancel", request.to_json_api())
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            return UnitResponse[AuthorizationDTO](DtoDecoder.decode(data), None)
+        else:
+            return UnitError.from_json_api(response.json())

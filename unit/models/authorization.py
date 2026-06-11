@@ -121,3 +121,41 @@ class ListAuthorizationParams(UnitParams):
         if self.sort:
             parameters["sort"] = self.sort
         return parameters
+
+
+class SimulateAuthorizationIncrease(UnitRequest):
+    def __init__(self, authorization_id: str, amount: int, card_last_4_digits: str, account_id: str):
+        self.authorization_id = authorization_id
+        self.amount = amount
+        self.card_last_4_digits = card_last_4_digits
+        self.account_id = account_id
+
+    def to_json_api(self) -> Dict:
+        return {
+            "data": {
+                "type": "authorization",
+                "attributes": {
+                    "amount": self.amount,
+                    "cardLast4Digits": self.card_last_4_digits,
+                },
+                "relationships": {
+                    "account": {"data": {"type": "depositAccount", "id": self.account_id}}
+                },
+            }
+        }
+
+
+class SimulateAuthorizationCancel(UnitRequest):
+    def __init__(self, authorization_id: str, account_id: str):
+        self.authorization_id = authorization_id
+        self.account_id = account_id
+
+    def to_json_api(self) -> Dict:
+        return {
+            "data": {
+                "type": "authorization",
+                "relationships": {
+                    "account": {"data": {"type": "depositAccount", "id": self.account_id}}
+                },
+            }
+        }
