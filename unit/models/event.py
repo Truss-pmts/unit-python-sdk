@@ -91,6 +91,20 @@ class AuthorizationCanceledEvent(BaseEvent):
                                           attributes["recurring"], attributes.get("tags"),
                                           relationships)
 
+class AuthorizationAmountChangedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, old_amount: int, new_amount: int,
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id, created_at, tags, relationships)
+        self.type = 'authorization.amountChanged'
+        self.attributes["oldAmount"] = old_amount
+        self.attributes["newAmount"] = new_amount
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return AuthorizationAmountChangedEvent(_id, date_utils.to_datetime(attributes["createdAt"]),
+                                               attributes["oldAmount"], attributes["newAmount"],
+                                               attributes.get("tags"), relationships)
+
 class AuthorizationDeclinedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, amount: int, card_last_4_digits: str, merchant: Merchant,
                  reason: str, recurring: str, tags: Optional[Dict[str, str]] = None,
