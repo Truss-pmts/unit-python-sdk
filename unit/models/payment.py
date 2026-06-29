@@ -407,9 +407,32 @@ class CreateCheckStopPaymentRequest(UnitRequest):
         return super().to_payload("checkStopPayment", self.relationships)
 
 
+class CreateAchStopPaymentRequest(UnitRequest):
+    def __init__(
+        self,
+        originator_name: Optional[List[str]] = None,
+        direction: str = "Debit",
+        min_amount: Optional[int] = None,
+        expiration: Optional[str] = None,
+        is_multi_use: bool = False,
+        description: Optional[str] = None,
+        relationships: Optional[Dict[str, Relationship]] = None,
+    ):
+        self.originator_name = originator_name
+        self.direction = direction
+        self.min_amount = min_amount
+        self.expiration = expiration
+        self.is_multi_use = is_multi_use
+        self.description = description
+        self.relationships = relationships
+
+    def to_json_api(self) -> Dict:
+        return super().to_payload("achStopPayment", self.relationships)
+
+
 CreatePaymentRequest = Union[CreateInlinePaymentRequest, CreateLinkedPaymentRequest, CreateVerifiedPaymentRequest,
                              CreateBookPaymentRequest, CreateWirePaymentRequest, CreatePushToCardPaymentRequest,
-                             CreateCheckPaymentRequest, CreateCheckStopPaymentRequest]
+                             CreateCheckPaymentRequest, CreateCheckStopPaymentRequest, CreateAchStopPaymentRequest]
 
 class PatchAchPaymentRequest(object):
     def __init__(self, payment_id: str, tags: Dict[str, str]):
