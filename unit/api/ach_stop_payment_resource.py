@@ -28,6 +28,14 @@ class AchStopPaymentResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
+    def get(self, stop_payment_id: str) -> Union[UnitResponse[RawUnitObject], UnitError]:
+        response = super().get(f"{self.resource}/{stop_payment_id}")
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            return UnitResponse[RawUnitObject](DtoDecoder.decode(data), None)
+        else:
+            return UnitError.from_json_api(response.json())
+
     def list(self) -> Union[UnitResponse[RawUnitObject], UnitError]:
         response = super().get(f"{self.resource}")
         if super().is_20x(response.status_code):
