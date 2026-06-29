@@ -1,7 +1,7 @@
 from unit.api.base_resource import BaseResource
 from unit.models import UnitResponse, UnitError, RawUnitObject
 from unit.models.codecs import DtoDecoder
-from unit.models.payment import CreateAchStopPaymentRequest
+from unit.models.payment import CreateAchStopPaymentRequest, UpdateAchStopPaymentRequest
 from typing import Union
 
 
@@ -13,6 +13,15 @@ class AchStopPaymentResource(BaseResource):
     def create(self, request: CreateAchStopPaymentRequest) -> Union[UnitResponse[RawUnitObject], UnitError]:
         payload = request.to_json_api()
         response = super().post(f"{self.resource}", payload)
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            return UnitResponse[RawUnitObject](DtoDecoder.decode(data), None)
+        else:
+            return UnitError.from_json_api(response.json())
+
+    def update(self, request: UpdateAchStopPaymentRequest) -> Union[UnitResponse[RawUnitObject], UnitError]:
+        payload = request.to_json_api()
+        response = super().patch(f"{self.resource}/{request.stop_payment_id}", payload)
         if super().is_20x(response.status_code):
             data = response.json().get("data")
             return UnitResponse[RawUnitObject](DtoDecoder.decode(data), None)

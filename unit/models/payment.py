@@ -430,6 +430,32 @@ class CreateAchStopPaymentRequest(UnitRequest):
         return super().to_payload("achStopPayment", self.relationships)
 
 
+class UpdateAchStopPaymentRequest(UnitRequest):
+    def __init__(
+        self,
+        stop_payment_id: str,
+        tags: Optional[Dict[str, str]] = None,
+    ):
+        self.stop_payment_id = stop_payment_id
+        self.tags = tags
+
+    def to_json_api(self) -> Dict:
+        payload = {
+            "data": {
+                "type": "achStopPayment",
+                "attributes": {}
+            }
+        }
+
+        if self.tags:
+            payload["data"]["attributes"]["tags"] = self.tags
+
+        return payload
+
+    def __repr__(self):
+        json.dumps(self.to_json_api())
+
+
 CreatePaymentRequest = Union[CreateInlinePaymentRequest, CreateLinkedPaymentRequest, CreateVerifiedPaymentRequest,
                              CreateBookPaymentRequest, CreateWirePaymentRequest, CreatePushToCardPaymentRequest,
                              CreateCheckPaymentRequest, CreateCheckStopPaymentRequest, CreateAchStopPaymentRequest]
