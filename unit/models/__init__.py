@@ -332,11 +332,17 @@ class BeneficialOwner(UnitDTO):
 
 
 class AuthorizedUser(UnitDTO):
-    def __init__(self, full_name: FullName, email: str, phone: Phone, jwt_subject: Optional[str] = None):
+    def __init__(self, full_name: FullName, email: str, phone: Phone, jwt_subject: Optional[str] = None,
+                 can_connect_with_auth_vendor: Optional[bool] = None):
         self.full_name = full_name
         self.email = email
         self.phone = phone
         self.jwt_subject = jwt_subject
+        # Controls whether this authorized user can authenticate through an auth
+        # vendor (e.g. Plaid Exchange). Unit defaults it to true; set false to
+        # block this user from sharing the customer's account data externally.
+        # Omitted from the payload when None (preserves Unit's default).
+        self.can_connect_with_auth_vendor = can_connect_with_auth_vendor
 
     @staticmethod
     def from_json_api(l: List) -> List:
@@ -344,7 +350,8 @@ class AuthorizedUser(UnitDTO):
         for data in l:
             authorized_users.append(
                 AuthorizedUser(
-                    data.get("fullName"), data.get("email"), data.get("phone"), data.get("jwtSubject")
+                    data.get("fullName"), data.get("email"), data.get("phone"), data.get("jwtSubject"),
+                    data.get("canConnectWithAuthVendor"),
                 )
             )
         return authorized_users
