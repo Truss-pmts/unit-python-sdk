@@ -86,3 +86,17 @@ class AccountResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
+    def verify(self, request: AccountVerifyRequest,
+               timeout: float = None) -> Union[UnitResponse[AccountVerifyDTO], UnitError]:
+        payload = request.to_json_api()
+        response = super().post(f"{self.resource}/verify", payload, timeout=timeout)
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            account_payload = data.get("account")
+            account = DtoDecoder.decode(account_payload) if account_payload else None
+            return UnitResponse[AccountVerifyDTO](
+                AccountVerifyDTO(exists=bool(data.get("exists")), account=account), None
+            )
+        else:
+            return UnitError.from_json_api(response.json())
+

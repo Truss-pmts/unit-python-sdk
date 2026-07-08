@@ -382,3 +382,30 @@ class ListAccountParams(UnitParams):
         if self.to_balance:
             parameters["filter[toBalance]"] = self.to_balance
         return parameters
+
+
+class AccountVerifyRequest(UnitRequest):
+    def __init__(self, routing_number: str, account_number: str):
+        self.routing_number = routing_number
+        self.account_number = account_number
+
+    def to_json_api(self) -> Dict:
+        return {
+            "data": {
+                "type": "accountVerify",
+                "attributes": {
+                    "routingNumber": self.routing_number,
+                    "accountNumber": self.account_number,
+                },
+            }
+        }
+
+    def __repr__(self):
+        return json.dumps(self.to_json_api())
+
+
+class AccountVerifyDTO(object):
+    def __init__(self, exists: bool, account: Optional[AccountDTO] = None):
+        self.type = "accountVerify"
+        self.exists = exists
+        self.account = account
