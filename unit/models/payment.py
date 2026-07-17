@@ -43,9 +43,8 @@ class SimulateIncomingAchPaymentDTO(BasePayment):
                  description: str, amount: int, reason: Optional[str],
                  settlement_date: Optional[datetime], tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]]):
-        BasePayment.__init__(self, id, created_at, direction, description, amount, reason, tags, relationships)
+        BasePayment.__init__(self, id, created_at, status, direction, description, amount, reason, tags, relationships)
         self.type = 'achPayment'
-        self.attributes["status"] = status
         self.settlement_date = settlement_date
 
     @staticmethod
@@ -53,6 +52,7 @@ class SimulateIncomingAchPaymentDTO(BasePayment):
         return BasePayment(
             _id,
             date_utils.to_datetime(attributes["createdAt"]),
+            attributes.get("status"),
             attributes.get("direction"),
             attributes["description"],
             attributes["amount"],
