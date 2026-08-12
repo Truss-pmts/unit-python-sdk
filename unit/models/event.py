@@ -107,13 +107,15 @@ class AuthorizationAmountChangedEvent(BaseEvent):
 
 class AuthorizationDeclinedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, amount: int, card_last_4_digits: str, merchant: Merchant,
-                 reason: str, recurring: str, tags: Optional[Dict[str, str]] = None,
+                 reason: str, recurring: str, decline_description: Optional[str] = None,
+                 tags: Optional[Dict[str, str]] = None,
                  relationships: Optional[Dict[str, Relationship]] = None):
         BaseEvent.__init__(self, id, created_at, tags, relationships)
         self.type = 'authorization.declined'
         self.attributes["cardLast4Digits"] = card_last_4_digits
         self.attributes["amount"] = amount
         self.attributes["reason"] = reason
+        self.attributes["declineDescription"] = decline_description
         self.attributes["merchant"] = merchant
         self.attributes["recurring"] = recurring
 
@@ -123,6 +125,7 @@ class AuthorizationDeclinedEvent(BaseEvent):
             id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
             amount=attributes["amount"], card_last_4_digits=attributes["cardLast4Digits"],
             merchant=Merchant.from_json_api(attributes["merchant"]), reason=attributes.get("reason"), recurring=attributes["recurring"],
+            decline_description=attributes.get("declineDescription"),
             tags=attributes.get("tags"), relationships=relationships)
 
 class AuthorizationCreatedEvent(BaseEvent):
@@ -167,12 +170,14 @@ class AuthorizationRequestApprovedEvent(BaseEvent):
 class AuthorizationRequestDeclinedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, amount: str, status: Optional[str], decline_reason: str,
                  partial_approval_allowed: str, merchant: Optional[Dict[str, str]], recurring: Optional[str],
-                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]],
+                 decline_description: Optional[str] = None):
         BaseEvent.__init__(self, id, created_at, tags, relationships)
         self.type = 'authorizationRequest.declined'
         self.attributes["amount"] = amount
         self.attributes["status"] = status
         self.attributes["declineReason"] = decline_reason
+        self.attributes["declineDescription"] = decline_description
         self.attributes["partialApprovalAllowed"] = partial_approval_allowed
         self.attributes["merchant"] = merchant
         self.attributes["recurring"] = recurring
@@ -184,7 +189,8 @@ class AuthorizationRequestDeclinedEvent(BaseEvent):
                                                  attributes["amount"], attributes.get("status"),
                                                  attributes["declineReason"], attributes["partialApprovalAllowed"],
                                                  attributes.get("merchant"), attributes.get("recurring"),
-                                                 attributes.get("tags"), relationships)
+                                                 attributes.get("tags"), relationships,
+                                                 decline_description=attributes.get("declineDescription"))
 
 
 class AuthorizationRequestPendingEvent(BaseEvent):
