@@ -40,6 +40,39 @@ class AccountFrozenEvent(BaseEvent):
                                   attributes.get("tags"), relationships)
 
 
+class AccountHoldCreatedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
+                 relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id, created_at, tags, relationships)
+        self.type = 'accountHold.created'
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return AccountHoldCreatedEvent(_id, date_utils.to_datetime(attributes["createdAt"]),
+                                       attributes.get("tags"), relationships)
+
+
+class AccountHoldReleasedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, amount: int, status: str,
+                 remaining_hold_amount: Optional[int], released_at: Optional[datetime],
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id, created_at, tags, relationships)
+        self.type = 'accountHold.released'
+        self.attributes["amount"] = amount
+        self.attributes["status"] = status
+        self.attributes["remainingHoldAmount"] = remaining_hold_amount
+        self.attributes["releasedAt"] = released_at
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        released_at = attributes.get("releasedAt")
+        return AccountHoldReleasedEvent(_id, date_utils.to_datetime(attributes["createdAt"]),
+                                        attributes["amount"], attributes["status"],
+                                        attributes.get("remainingHoldAmount"),
+                                        date_utils.to_datetime(released_at) if released_at else None,
+                                        attributes.get("tags"), relationships)
+
+
 class ApplicationDeniedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]]):
