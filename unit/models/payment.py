@@ -574,6 +574,8 @@ class ListReceivedPaymentParams(UnitParams):
                  customer_id: Optional[str] = None, tags: Optional[object] = None,
                  status: Optional[List[AchReceivedPaymentStatus]] = None,
                  direction: Optional[List[PaymentDirections]] = None, include_completed: Optional[bool] = None,
+                 since: Optional[str] = None, until: Optional[str] = None, from_amount: Optional[int] = None,
+                 to_amount: Optional[int] = None,
                  sort: Optional[Literal["createdAt", "-createdAt"]] = None, include: Optional[str] = None):
         self.limit = limit
         self.offset = offset
@@ -582,6 +584,10 @@ class ListReceivedPaymentParams(UnitParams):
         self.tags = tags
         self.status = status
         self.include_completed = include_completed
+        self.since = since
+        self.until = until
+        self.from_amount = from_amount
+        self.to_amount = to_amount
         self.sort = sort
         self.include = include
 
@@ -598,6 +604,14 @@ class ListReceivedPaymentParams(UnitParams):
         if self.status:
             for idx, status_filter in enumerate(self.status):
                 parameters[f"filter[status][{idx}]"] = status_filter
+        if self.since:
+            parameters["filter[since]"] = self.since
+        if self.until:
+            parameters["filter[until]"] = self.until
+        if self.from_amount is not None:
+            parameters["filter[fromAmount]"] = self.from_amount
+        if self.to_amount is not None:
+            parameters["filter[toAmount]"] = self.to_amount
         if self.sort:
             parameters["sort"] = self.sort
         if self.include:
