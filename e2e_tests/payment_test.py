@@ -73,3 +73,40 @@ def test_update_book_payment():
     request = PatchBookPaymentRequest(payment_id, tags)
     response = client.payments.update(request)
     assert response.data.type == "bookPayment"
+
+def test_create_linked_payment_request_includes_sec_code_when_set():
+    relationships = {
+        "account": Relationship("depositAccount", "111111"),
+        "counterparty": Relationship("counterparty", "222222"),
+    }
+    request = CreateLinkedPaymentRequest(
+        100,
+        "ACH payment",
+        relationships,
+        None,
+        None,
+        None,
+        None,
+        sec_code="WEB",
+    )
+    payload = request.to_json_api()
+    assert payload["data"]["attributes"]["secCode"] == "WEB"
+
+
+def test_create_linked_payment_request_omits_sec_code_when_unset():
+    relationships = {
+        "account": Relationship("depositAccount", "111111"),
+        "counterparty": Relationship("counterparty", "222222"),
+    }
+    request = CreateLinkedPaymentRequest(
+        100,
+        "ACH payment",
+        relationships,
+        None,
+        None,
+        None,
+        None,
+    )
+    payload = request.to_json_api()
+    assert "secCode" not in payload["data"]["attributes"]
+

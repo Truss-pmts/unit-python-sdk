@@ -237,16 +237,21 @@ class CreateInlinePaymentRequest(CreatePaymentBaseRequest):
 class CreateLinkedPaymentRequest(CreatePaymentBaseRequest):
     def __init__(self, amount: int, description: str, relationships: Dict[str, Relationship], addenda: Optional[str],
                  verify_counterparty_balance: Optional[bool], idempotency_key: Optional[str],
-                 tags: Optional[Dict[str, str]], direction: str = "Credit", same_day: Optional[bool] = False):
+                 tags: Optional[Dict[str, str]], direction: str = "Credit", same_day: Optional[bool] = False,
+                 sec_code: Optional[str] = None):
         CreatePaymentBaseRequest.__init__(self, amount, description, relationships, idempotency_key, tags, direction, same_day=same_day)
         self.addenda = addenda
         self.verify_counterparty_balance = verify_counterparty_balance
+        self.sec_code = sec_code
 
     def to_json_api(self) -> Dict:
         payload = CreatePaymentBaseRequest.to_json_api(self)
 
         if self.addenda:
             payload["data"]["attributes"]["addenda"] = self.addenda
+
+        if self.sec_code:
+            payload["data"]["attributes"]["secCode"] = self.sec_code
 
         if self.verify_counterparty_balance:
             payload["data"]["attributes"]["verifyCounterpartyBalance"] = self.verify_counterparty_balance
