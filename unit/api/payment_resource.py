@@ -26,8 +26,8 @@ class PaymentResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
-    def get(self, payment_id: str, include: Optional[str] = "") -> Union[UnitResponse[PaymentDTO], UnitError]:
-        response = super().get(f"{self.resource}/{payment_id}", {"include": include})
+    def get(self, payment_id: str, include: Optional[str] = "", timeout: float = None) -> Union[UnitResponse[PaymentDTO], UnitError]:
+        response = super().get(f"{self.resource}/{payment_id}", {"include": include}, timeout=timeout)
         if response.status_code == 200:
             data = response.json().get("data")
             included = response.json().get("included")
@@ -35,9 +35,9 @@ class PaymentResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
-    def list(self, params: ListPaymentParams = None) -> Union[UnitResponse[List[PaymentDTO]], UnitError]:
+    def list(self, params: ListPaymentParams = None, timeout: float = None) -> Union[UnitResponse[List[PaymentDTO]], UnitError]:
         params = params or ListPaymentParams()
-        response = super().get(self.resource, params.to_dict())
+        response = super().get(self.resource, params.to_dict(), timeout=timeout)
         if response.status_code == 200:
             data = response.json().get("data")
             included = response.json().get("included")
