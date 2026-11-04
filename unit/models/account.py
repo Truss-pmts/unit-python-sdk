@@ -353,7 +353,8 @@ class ListAccountParams(UnitParams):
     def __init__(self, offset: int = 0, limit: int = 100, customer_id: Optional[str] = None,
                  tags: Optional[Dict[str, str]] = None, include: Optional[str] = None,
                  status: Optional[AccountStatus] = None, from_balance: Optional[int] = None,
-                 to_balance: Optional[int] = None, _type: Optional[AccountTypes] = None):
+                 to_balance: Optional[int] = None, _type: Optional[AccountTypes] = None,
+                 routing_number: Optional[str] = None, account_number: Optional[str] = None):
         self.offset = offset
         self.limit = limit
         self.customer_id = customer_id
@@ -363,6 +364,8 @@ class ListAccountParams(UnitParams):
         self.from_balance = from_balance
         self.to_balance = to_balance
         self._type = _type
+        self.routing_number = routing_number
+        self.account_number = account_number
     
     def to_dict(self) -> Dict:
         parameters = {"page[limit]": self.limit, "page[offset]": self.offset}
@@ -381,31 +384,8 @@ class ListAccountParams(UnitParams):
             parameters["filter[fromBalance]"] = self.from_balance
         if self.to_balance:
             parameters["filter[toBalance]"] = self.to_balance
+        if self.routing_number:
+            parameters["filter[routingNumber]"] = self.routing_number
+        if self.account_number:
+            parameters["filter[accountNumber]"] = self.account_number
         return parameters
-
-
-class AccountVerifyRequest(UnitRequest):
-    def __init__(self, routing_number: str, account_number: str):
-        self.routing_number = routing_number
-        self.account_number = account_number
-
-    def to_json_api(self) -> Dict:
-        return {
-            "data": {
-                "type": "accountVerify",
-                "attributes": {
-                    "routingNumber": self.routing_number,
-                    "accountNumber": self.account_number,
-                },
-            }
-        }
-
-    def __repr__(self):
-        return json.dumps(self.to_json_api())
-
-
-class AccountVerifyDTO(object):
-    def __init__(self, exists: bool, account: Optional[AccountDTO] = None):
-        self.type = "accountVerify"
-        self.exists = exists
-        self.account = account
