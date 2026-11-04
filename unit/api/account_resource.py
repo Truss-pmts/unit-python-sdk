@@ -59,9 +59,10 @@ class AccountResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
-    def list(self, params: ListAccountParams = None) -> Union[UnitResponse[List[AccountDTO]], UnitError]:
+    def list(self, params: ListAccountParams = None,
+             timeout: float = None) -> Union[UnitResponse[List[AccountDTO]], UnitError]:
         params = params or ListAccountParams()
-        response = super().get(self.resource, params.to_dict())
+        response = super().get(self.resource, params.to_dict(), timeout=timeout)
         if super().is_20x(response.status_code):
             data = response.json().get("data")
             included = response.json().get("included")
@@ -83,20 +84,6 @@ class AccountResource(BaseResource):
         if super().is_20x(response.status_code):
             data = response.json().get("data")
             return UnitResponse[AccountLimitsDTO](DtoDecoder.decode(data), None)
-        else:
-            return UnitError.from_json_api(response.json())
-
-    def verify(self, request: AccountVerifyRequest,
-               timeout: float = None) -> Union[UnitResponse[AccountVerifyDTO], UnitError]:
-        payload = request.to_json_api()
-        response = super().post(f"{self.resource}/verify", payload, timeout=timeout)
-        if super().is_20x(response.status_code):
-            data = response.json().get("data")
-            account_payload = data.get("account")
-            account = DtoDecoder.decode(account_payload) if account_payload else None
-            return UnitResponse[AccountVerifyDTO](
-                AccountVerifyDTO(exists=bool(data.get("exists")), account=account), None
-            )
         else:
             return UnitError.from_json_api(response.json())
 
