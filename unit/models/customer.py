@@ -2,7 +2,8 @@ from unit.utils import date_utils
 from unit.models import *
 
 ArchiveReason = Literal["Inactive", "FraudACHActivity", "FraudCardActivity", "FraudCheckActivity",
-                        "FraudApplicationHistory", "FraudAccountActivity", "FraudClientIdentified"]
+                        "FraudApplicationHistory", "FraudAccountActivity", "FraudClientIdentified",
+                        "FraudLinkedToFraudulentCustomer", "ByBank"]
 
 CustomerStatus = Literal["Active", "Archived"]
 
