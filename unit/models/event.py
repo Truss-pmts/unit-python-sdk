@@ -760,14 +760,19 @@ class PaymentCanceledEvent(BaseEvent):
 
 class PaymentPendingReviewEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
+                 relationships: Optional[Dict[str, Relationship]], amount: Optional[int] = None,
+                 direction: Optional[str] = None):
         BaseEvent.__init__(self, id=id, created_at=created_at, tags=tags, relationships=relationships)
         self.type = 'payment.pendingReview'
+        self.attributes["amount"] = amount
+        self.attributes["direction"] = direction
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
+        # amount and direction appear only in Unit's examples, not an attribute table, so read them optionally.
         return PaymentPendingReviewEvent(id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
-                                         tags=attributes.get("tags"), relationships=relationships)
+                                         tags=attributes.get("tags"), relationships=relationships,
+                                         amount=attributes.get("amount"), direction=attributes.get("direction"))
 
 class PaymentCanceledUpperCasedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],

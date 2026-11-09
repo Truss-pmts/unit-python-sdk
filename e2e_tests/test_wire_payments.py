@@ -671,8 +671,21 @@ class TestWireEventDecoding(unittest.TestCase):
             datetime(2021, 1, 2, 13, 38, 28, 223000, tzinfo=timezone.utc),
         )
         self.assertEqual(event.attributes["tags"], {"tag": "value"})
+        self.assertEqual(event.attributes["amount"], 2500)
+        self.assertEqual(event.attributes["direction"], "Credit")
         self.assertEqual(event.relationships["payment"].id, "10")
         self.assertEqual(event.relationships["account"].id, "10009")
+
+    def test_payment_pending_review_event_without_amount_or_direction(self):
+        payload = copy.deepcopy(PAYMENT_PENDING_REVIEW_EVENT)
+        del payload["attributes"]["amount"]
+        del payload["attributes"]["direction"]
+
+        event = DtoDecoder.decode([payload])[0]
+
+        self.assertIsInstance(event, PaymentPendingReviewEvent)
+        self.assertIsNone(event.attributes["amount"])
+        self.assertIsNone(event.attributes["direction"])
 
     def test_assignment_created_event_for_a_wire_payment(self):
         event = DtoDecoder.decode([ASSIGNMENT_CREATED_EVENT])[0]
