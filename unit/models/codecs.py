@@ -98,6 +98,9 @@ mappings = {
         "wireTransaction": lambda _id, _type, attributes, relationships:
         WireTransactionDTO.from_json_api(_id, _type, attributes, relationships),
 
+        "returnedWireTransaction": lambda _id, _type, attributes, relationships:
+        ReturnedWireTransactionDTO.from_json_api(_id, _type, attributes, relationships),
+
         "releaseTransaction": lambda _id, _type, attributes, relationships:
         ReleaseTransactionDTO.from_json_api(_id, _type, attributes, relationships),
 
@@ -307,6 +310,15 @@ mappings = {
 
         "payment.canceled": lambda _id, _type, attributes, relationships:
         PaymentCanceledEvent.from_json_api(_id, _type, attributes, relationships),
+
+        "payment.pendingReview": lambda _id, _type, attributes, relationships:
+        PaymentPendingReviewEvent.from_json_api(_id, _type, attributes, relationships),
+
+        "assignment.created": lambda _id, _type, attributes, relationships:
+        AssignmentCreatedEvent.from_json_api(_id, _type, attributes, relationships),
+
+        "assignment.escalated": lambda _id, _type, attributes, relationships:
+        AssignmentEscalatedEvent.from_json_api(_id, _type, attributes, relationships),
 
         "payment.Canceled": lambda _id, _type, attributes, relationships:
         PaymentCanceledUpperCasedEvent.from_json_api(_id, _type, attributes, relationships),
@@ -531,6 +543,9 @@ class UnitEncoder(json.JSONEncoder):
         if isinstance(obj, Counterparty):
             return {"routingNumber": obj.routing_number, "accountNumber": obj.account_number,
                     "accountType": obj.account_type, "name": obj.name}
+        if isinstance(obj, WireCounterparty):
+            return {"name": obj.name, "routingNumber": obj.routing_number, "accountNumber": obj.account_number,
+                    "address": obj.address}
         if isinstance(obj, Coordinates):
             return {"longitude": obj.longitude, "latitude": obj.latitude}
         if isinstance(obj, CheckPaymentCounterparty):
