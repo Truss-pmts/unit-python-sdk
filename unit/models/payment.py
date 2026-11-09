@@ -3,7 +3,7 @@ from unit.models import *
 
 PaymentTypes = Literal["AchPayment", "BookPayment", "WirePayment", "BillPayment"]
 PaymentDirections = Literal["Debit", "Credit"]
-PaymentStatus = Literal["Pending", "Rejected", "Clearing", "Sent", "Canceled", "Returned"]
+PaymentStatus = Literal["Pending", "PendingReview", "Rejected", "Clearing", "Sent", "Canceled", "Returned"]
 
 
 class BasePayment(object):
@@ -99,19 +99,34 @@ class BookPaymentDTO(BasePayment):
                               attributes.get("reason"), attributes.get("tags"), relationships)
 
 class WirePaymentDTO(BasePayment):
-    def __init__(self, id: str, created_at: datetime, status: PaymentStatus, counterparty: WireCounterparty,
-                 direction: str, description: str, amount: int, reason: Optional[str], tags: Optional[Dict[str, str]],
-                 relationships: Optional[Dict[str, Relationship]]):
-        BasePayment.__init__(self, id, created_at, direction, description, amount, reason, tags, relationships)
+    def __init__(self, id: str, created_at: datetime, status: PaymentStatus, counterparty: Optional[WireCounterparty],
+                 direction: Optional[str], description: str, amount: int, reason: Optional[str],
+                 tags: Optional[Dict[str, str]], relationships: Optional[Dict[str, Relationship]],
+                 imad_omad: Optional[Dict[str, str]] = None):
+        BasePayment.__init__(self, id=id, created_at=created_at, status=status, direction=direction,
+                             description=description, amount=amount, reason=reason, tags=tags,
+                             relationships=relationships)
         self.type = "wirePayment"
         self.attributes["counterparty"] = counterparty
+        self.attributes["imadOmad"] = imad_omad
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
-        return WirePaymentDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["status"],
-                              WireCounterparty.from_json_api(attributes["counterparty"]), attributes["direction"],
-                              attributes["description"], attributes["amount"], attributes.get("reason"),
-                              attributes.get("tags"), relationships)
+        # Unit's sandbox simulation responses return a wirePayment without status, direction or counterparty
+        counterparty = attributes.get("counterparty")
+        return WirePaymentDTO(
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            status=attributes.get("status"),
+            counterparty=WireCounterparty.from_json_api(data=counterparty) if counterparty else None,
+            direction=attributes.get("direction"),
+            description=attributes["description"],
+            amount=attributes["amount"],
+            reason=attributes.get("reason"),
+            tags=attributes.get("tags"),
+            relationships=relationships,
+            imad_omad=attributes.get("imadOmad"),
+        )
 
 
 class PushToCardPaymentDTO(BasePayment):
@@ -345,8 +360,8 @@ class CreateBookPaymentRequest(CreatePaymentBaseRequest):
 
 class CreateWirePaymentRequest(CreatePaymentBaseRequest):
     def __init__(self, amount: int, description: str, counterparty: WireCounterparty,
-                 relationships: Dict[str, Relationship], idempotency_key: Optional[str], tags: Optional[Dict[str, str]],
-                 direction: str = "Credit"):
+                 relationships: Dict[str, Relationship], idempotency_key: Optional[str] = None,
+                 tags: Optional[Dict[str, str]] = None, direction: str = "Credit"):
         CreatePaymentBaseRequest.__init__(self, amount, description, relationships, idempotency_key, tags, direction,
                                       "wirePayment")
         self.counterparty = counterparty
@@ -355,6 +370,42 @@ class CreateWirePaymentRequest(CreatePaymentBaseRequest):
         payload = CreatePaymentBaseRequest.to_json_api(self)
         payload["data"]["attributes"]["counterparty"] = self.counterparty
         return payload
+
+
+class SimulateIncomingWireRequest(UnitRequest):
+    def __init__(self, amount: int, description: str, relationships: Dict[str, Relationship]):
+        self.type = "wirePayment"
+        self.amount = amount
+        self.description = description
+        self.relationships = relationships
+
+    def to_json_api(self) -> Dict:
+        return {
+            "data": {
+                "type": self.type,
+                "attributes": {
+                    "amount": self.amount,
+                    "description": self.description
+                },
+                "relationships": self.relationships
+            }
+        }
+
+
+class SimulateTransmitWireRequest(UnitRequest):
+    def __init__(self, payment_id: str):
+        self.type = "transmitWirePayment"
+        self.payment_id = payment_id
+        # "FedWirePayment" is the relationship type in Unit's documented transmit example
+        self.relationships = {"payment": Relationship(_type="FedWirePayment", _id=payment_id)}
+
+    def to_json_api(self) -> Dict:
+        return {
+            "data": {
+                "type": self.type,
+                "relationships": self.relationships
+            }
+        }
 
 
 class CreatePushToCardPaymentRequest(CreatePaymentBaseRequest):

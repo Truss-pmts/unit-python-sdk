@@ -758,6 +758,22 @@ class PaymentCanceledEvent(BaseEvent):
     def from_json_api(_id, _type, attributes, relationships):
         return PaymentCanceledEvent(_id, date_utils.to_datetime(attributes["createdAt"]), attributes.get("tags"), relationships)
 
+class PaymentPendingReviewEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
+                 relationships: Optional[Dict[str, Relationship]], amount: Optional[int] = None,
+                 direction: Optional[str] = None):
+        BaseEvent.__init__(self, id=id, created_at=created_at, tags=tags, relationships=relationships)
+        self.type = 'payment.pendingReview'
+        self.attributes["amount"] = amount
+        self.attributes["direction"] = direction
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        # amount and direction appear only in Unit's examples, not an attribute table, so read them optionally.
+        return PaymentPendingReviewEvent(id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
+                                         tags=attributes.get("tags"), relationships=relationships,
+                                         amount=attributes.get("amount"), direction=attributes.get("direction"))
+
 class PaymentCanceledUpperCasedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, tags: Optional[Dict[str, str]],
                  relationships: Optional[Dict[str, Relationship]]):
@@ -779,6 +795,32 @@ class PaymentRejectedEvent(BaseEvent):
     def from_json_api(_id, _type, attributes, relationships):
         return PaymentRejectedEvent(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["reason"],
                                     attributes.get("tags"), relationships)
+
+class AssignmentCreatedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, assignee: Optional[str], tags: Optional[Dict[str, str]],
+                 relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id=id, created_at=created_at, tags=tags, relationships=relationships)
+        self.type = 'assignment.created'
+        self.attributes["assignee"] = assignee
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return AssignmentCreatedEvent(id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
+                                      assignee=attributes.get("assignee"), tags=attributes.get("tags"),
+                                      relationships=relationships)
+
+class AssignmentEscalatedEvent(BaseEvent):
+    def __init__(self, id: str, created_at: datetime, assignee: Optional[str], tags: Optional[Dict[str, str]],
+                 relationships: Optional[Dict[str, Relationship]]):
+        BaseEvent.__init__(self, id=id, created_at=created_at, tags=tags, relationships=relationships)
+        self.type = 'assignment.escalated'
+        self.attributes["assignee"] = assignee
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return AssignmentEscalatedEvent(id=_id, created_at=date_utils.to_datetime(attributes["createdAt"]),
+                                        assignee=attributes.get("assignee"), tags=attributes.get("tags"),
+                                        relationships=relationships)
 
 class StatementsCreatedEvent(BaseEvent):
     def __init__(self, id: str, created_at: datetime, period: str, tags: Optional[Dict[str, str]],
@@ -953,6 +995,7 @@ EventDTO = Union[
     CheckPaymentDeliveryStatusChangedEvent, CheckPaymentAdditionalVerificationRequiredEvent,
     CheckPaymentAdditionalVerificationApprovedEvent,
     CustomerCreatedEvent, PaymentClearingEvent, PaymentSentEvent, PaymentReturnedEvent, PaymentCanceledEvent, PaymentCanceledUpperCasedEvent,
+    PaymentPendingReviewEvent, AssignmentCreatedEvent, AssignmentEscalatedEvent,
     StatementsCreatedEvent, TransactionCreatedEvent, TransactionUpdatedEvent, AccountReopenedEvent, RawUnitObject,
     StopPaymentCreatedEvent, StopPaymentPaymentStoppedEvent, StopPaymentDisabledEvent,
     DisputeCreatedEvent, DisputeStatusChangedEvent, ReceivedPaymentCreatedEvent

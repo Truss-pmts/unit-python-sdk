@@ -282,12 +282,41 @@ class WireTransactionDTO(BaseTransactionDTO):
 
     @staticmethod
     def from_json_api(_id, _type, attributes, relationships):
+        # Unit documents description as optional and omits it from its wireTransaction example
         return WireTransactionDTO(_id, date_utils.to_datetime(attributes["createdAt"]), attributes["direction"],
                                 attributes["amount"], attributes["balance"], attributes["summary"],
-                                Counterparty.from_json_api(attributes["counterparty"]), attributes["description"],
+                                Counterparty.from_json_api(attributes["counterparty"]), attributes.get("description"),
                                 attributes.get("originatorToBeneficiaryInformation"), attributes.get("senderReference"),
                                 attributes.get("referenceForBeneficiary"), attributes.get("beneficiaryInformation"),
                                 attributes.get("beneficiaryAdviceInformation"), attributes.get("tags"), relationships)
+
+
+class ReturnedWireTransactionDTO(BaseTransactionDTO):
+    def __init__(self, id: str, created_at: datetime, direction: str, amount: int, balance: int, summary: str,
+                 reason: str, imad: Optional[str], omad: Optional[str], tags: Optional[Dict[str, str]],
+                 relationships: Optional[Dict[str, Relationship]]):
+        BaseTransactionDTO.__init__(self, id=id, created_at=created_at, direction=direction, amount=amount,
+                                    balance=balance, summary=summary, tags=tags, relationships=relationships)
+        self.type = 'returnedWireTransaction'
+        self.attributes["reason"] = reason
+        self.attributes["imad"] = imad
+        self.attributes["omad"] = omad
+
+    @staticmethod
+    def from_json_api(_id, _type, attributes, relationships):
+        return ReturnedWireTransactionDTO(
+            id=_id,
+            created_at=date_utils.to_datetime(attributes["createdAt"]),
+            direction=attributes["direction"],
+            amount=attributes["amount"],
+            balance=attributes["balance"],
+            summary=attributes["summary"],
+            reason=attributes.get("reason"),
+            imad=attributes.get("imad"),
+            omad=attributes.get("omad"),
+            tags=attributes.get("tags"),
+            relationships=relationships,
+        )
 
 
 class ReleaseTransactionDTO(BaseTransactionDTO):
@@ -483,7 +512,7 @@ TransactionDTO = Union[OriginatedAchTransactionDTO, ReceivedAchTransactionDTO, R
                        ReturnedCheckDepositTransactionDTO, CheckPaymentTransactionDTO,
                        ReturnedCheckPaymentTransactionDTO, PaymentAdvanceTransactionDTO,
                        RepaidPaymentAdvanceTransactionDTO, AccountLowBalanceClosureTransactionDTO, NegativeBalanceCoverageTransactionDTO,
-                       WriteOffTransactionDTO]
+                       WriteOffTransactionDTO, ReturnedWireTransactionDTO]
 
 
 class PatchTransactionRequest(BaseTransactionDTO, UnitRequest):

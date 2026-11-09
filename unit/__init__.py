@@ -11,6 +11,7 @@ from unit.api.transaction_resource import TransactionResource
 from unit.api.payment_resource import PaymentResource
 from unit.api.repayment_resource import RepaymentResource
 from unit.api.ach_resource import AchResource
+from unit.api.wire_resource import WireResource
 from unit.api.statement_resource import StatementResource
 from unit.api.customerToken_resource import CustomerTokenResource
 from unit.api.counterparty_resource import CounterpartyResource
@@ -46,6 +47,7 @@ class Unit(object):
         self.check_deposits = CheckDepositResource(api_url, token)
         self.repayments = RepaymentResource(api_url, token)
         self.ach = AchResource(api_url, token)
+        self.wire = WireResource(api_url, token)
         self.statements = StatementResource(api_url, token)
         self.customerTokens = CustomerTokenResource(api_url, token)
         self.counterparty = CounterpartyResource(api_url, token)
