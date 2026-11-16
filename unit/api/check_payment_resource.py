@@ -60,6 +60,16 @@ class CheckPaymentResource(BaseResource):
         else:
             return UnitError.from_json_api(response.json())
 
+    def reprocess(self, check_payment_id: str) -> Union[UnitResponse[CheckPaymentDTO], UnitError]:
+        # Unit accepts this only while the check is MarkedForReturn for NotSufficientFunds
+        # and the account has been funded first (Unit support, Zendesk case 169500).
+        response = super().post(f"{self.resource}/{check_payment_id}/reprocess")
+        if super().is_20x(response.status_code):
+            data = response.json().get("data")
+            return UnitResponse[CheckPaymentDTO](data=DtoDecoder.decode(payload=data), included=None)
+        else:
+            return UnitError.from_json_api(data=response.json())
+
     def return_check(self, request: ReturnCheckPaymentRequest) -> Union[UnitResponse[CheckPaymentDTO], UnitError]:
         payload = request.to_json_api()
         response = super().post(f"{self.resource}/{request.check_payment_id}/return", payload)
